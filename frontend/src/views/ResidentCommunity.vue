@@ -524,10 +524,9 @@ export default {
         
         try {
           // 图片上传需要使用axios直接调用，因为formData不能使用apiRequest
-          const response = await axios.post('http://localhost:8080/backend/api/community/upload', formData, {
+          const response = await axios.post('/community/upload', formData, {
             headers: {
-              'Content-Type': 'multipart/form-data',
-              Authorization: `Bearer ${this.getLocalStorageItem('token')}`
+              'Content-Type': 'multipart/form-data'
             }
           })
           

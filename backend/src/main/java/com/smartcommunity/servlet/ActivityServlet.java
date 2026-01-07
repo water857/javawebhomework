@@ -4,11 +4,15 @@ import com.google.gson.Gson;
 import com.smartcommunity.entity.Activity;
 import com.smartcommunity.entity.ActivityImage;
 import com.smartcommunity.entity.ActivityParticipant;
+import com.smartcommunity.entity.ActivityReview;
 import com.smartcommunity.entity.User;
+import com.smartcommunity.dao.ActivityReviewDAO;
+import com.smartcommunity.dao.impl.ActivityReviewDAOImpl;
 import com.smartcommunity.service.ActivityService;
 import com.smartcommunity.service.UserService;
 import com.smartcommunity.service.impl.ActivityServiceImpl;
 import com.smartcommunity.service.impl.UserServiceImpl;
+import com.smartcommunity.util.RoleConstants;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -23,6 +27,7 @@ import java.util.List;
 @WebServlet(name = "ActivityServlet", urlPatterns = "/api/activities/*")
 public class ActivityServlet extends HttpServlet {
     private ActivityService activityService = new ActivityServiceImpl();
+    private ActivityReviewDAO reviewDAO = new ActivityReviewDAOImpl();
     private UserService userService = new UserServiceImpl();
     private Gson gson = new Gson();
 
@@ -53,6 +58,30 @@ public class ActivityServlet extends HttpServlet {
             // 从JWT过滤器获取用户信息（可能为null，因为activities路径允许匿名访问）
             String username = (String) req.getAttribute("username");
             User currentUser = username != null ? userService.getUserByUsername(username) : null;
+            String role = (String) req.getAttribute("role");
+
+            if (relativeURI.equals("/api/activities/review")) {
+                if (!RoleConstants.PROPERTY_ADMIN.equals(role)) {
+                    resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    out.write(gson.toJson(new Response("error", "无权限")));
+                    return;
+                }
+                ReviewRequest reviewRequest = gson.fromJson(req.getReader(), ReviewRequest.class);
+                if (reviewRequest == null || reviewRequest.getActivityId() <= 0) {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.write(gson.toJson(new Response("error", "参数不完整")));
+                    return;
+                }
+                ActivityReview review = new ActivityReview();
+                review.setActivityId(reviewRequest.getActivityId());
+                review.setSummary(reviewRequest.getSummary());
+                review.setImages(reviewRequest.getImages());
+                review.setCreateTime(new Timestamp(System.currentTimeMillis()));
+                int updated = reviewDAO.saveReview(review);
+                resp.setStatus(HttpServletResponse.SC_OK);
+                out.write(gson.toJson(new Response("success", "回顾已保存", java.util.Map.of("updated", updated))));
+                return;
+            }
 
             if (relativeURI.equals("/api/activities")) {
                 // 获取活动列表
@@ -116,6 +145,17 @@ public class ActivityServlet extends HttpServlet {
                 resp.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
                 out.write(gson.toJson(new Response("error", "不允许使用GET方法更新活动状态")));
                 return;
+            } else if (relativeURI.startsWith("/api/activities/review/")) {
+                String[] parts = relativeURI.split("/");
+                if (parts.length < 5) {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.write(gson.toJson(new Response("error", "无效的活动ID")));
+                    return;
+                }
+                int activityId = Integer.parseInt(parts[4]);
+                ActivityReview review = reviewDAO.getReviewByActivityId(activityId);
+                resp.setStatus(HttpServletResponse.SC_OK);
+                out.write(gson.toJson(new Response("success", "获取活动回顾成功", review)));
             } else if (relativeURI.startsWith("/api/activities/")) {
                 // 获取活动详情
                 String[] parts = relativeURI.split("/");
@@ -155,6 +195,8 @@ public class ActivityServlet extends HttpServlet {
                     responseData.put("isRegistered", isRegistered);
                     responseData.put("images", images);
                     responseData.put("evaluations", evaluations);
+                    ActivityReview review = reviewDAO.getReviewByActivityId(activityId);
+                    responseData.put("review", review);
                     
                     resp.setStatus(HttpServletResponse.SC_OK);
                     out.write(gson.toJson(new Response("success", "获取活动详情成功", responseData)));
@@ -189,6 +231,30 @@ public class ActivityServlet extends HttpServlet {
             // 从JWT过滤器获取用户信息（可能为null，因为activities路径允许匿名访问）
             String username = (String) req.getAttribute("username");
             User currentUser = username != null ? userService.getUserByUsername(username) : null;
+            String role = (String) req.getAttribute("role");
+
+            if (relativeURI.equals("/api/activities/review")) {
+                if (!RoleConstants.PROPERTY_ADMIN.equals(role)) {
+                    resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    out.write(gson.toJson(new Response("error", "无权限")));
+                    return;
+                }
+                ReviewRequest reviewRequest = gson.fromJson(req.getReader(), ReviewRequest.class);
+                if (reviewRequest == null || reviewRequest.getActivityId() <= 0) {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    out.write(gson.toJson(new Response("error", "参数不完整")));
+                    return;
+                }
+                ActivityReview review = new ActivityReview();
+                review.setActivityId(reviewRequest.getActivityId());
+                review.setSummary(reviewRequest.getSummary());
+                review.setImages(reviewRequest.getImages());
+                review.setCreateTime(new Timestamp(System.currentTimeMillis()));
+                int updated = reviewDAO.saveReview(review);
+                resp.setStatus(HttpServletResponse.SC_OK);
+                out.write(gson.toJson(new Response("success", "回顾已保存", java.util.Map.of("updated", updated))));
+                return;
+            }
 
             if (relativeURI.equals("/api/activities")) {
                 // 发布活动
@@ -315,6 +381,7 @@ public class ActivityServlet extends HttpServlet {
             // 从JWT过滤器获取用户信息（可能为null，因为activities路径允许匿名访问）
             String username = (String) req.getAttribute("username");
             User currentUser = username != null ? userService.getUserByUsername(username) : null;
+            String role = (String) req.getAttribute("role");
 
             if (relativeURI.startsWith("/api/activities/status/")) {
                 // 更新活动状态
@@ -427,6 +494,7 @@ public class ActivityServlet extends HttpServlet {
             // 从JWT过滤器获取用户信息（可能为null，因为activities路径允许匿名访问）
             String username = (String) req.getAttribute("username");
             User currentUser = username != null ? userService.getUserByUsername(username) : null;
+            String role = (String) req.getAttribute("role");
 
             if (relativeURI.startsWith("/api/activities/cancel/")) {
                 // 取消报名
@@ -512,6 +580,24 @@ public class ActivityServlet extends HttpServlet {
 
         public void setData(Object data) {
             this.data = data;
+        }
+    }
+
+    private static class ReviewRequest {
+        private int activityId;
+        private String summary;
+        private String images;
+
+        public int getActivityId() {
+            return activityId;
+        }
+
+        public String getSummary() {
+            return summary;
+        }
+
+        public String getImages() {
+            return images;
         }
     }
 

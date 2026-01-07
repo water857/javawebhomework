@@ -1,5 +1,17 @@
+import axios from 'axios';
+
 // API服务配置
-const API_BASE_URL = 'http://localhost:8080/backend/api';
+const apiClient = axios.create({
+  baseURL: '/api'
+});
+
+apiClient.interceptors.request.use((config) => {
+  const token = typeof localStorage !== 'undefined' ? localStorage.getItem('token') : '';
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
 // 用户相关API
 export const userApi = {
@@ -24,32 +36,9 @@ export const userApi = {
   }
 };
 
-// 获取请求头，包含JWT token
-function getHeaders() {
-  let token = '';
-  // 安全获取本地存储中的token
-  if (typeof localStorage !== 'undefined') {
-    token = localStorage.getItem('token');
-  }
-  const headers = {
-    'Content-Type': 'application/json'
-  };
-  
-  // 只有当token存在时才添加Authorization头
-  if (token && token.trim() !== '') {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-  
-  return headers;
-}
-
 // 处理API响应
-async function handleResponse(response) {
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || `HTTP错误!状态: ${response.status}`);
-  }
-  const responseData = await response.json();
+function handleResponse(response) {
+  const responseData = response.data;
   // 检查响应是否包含code或status字段，如果是，说明是标准响应格式
   if (responseData.code || responseData.status) {
     const status = responseData.code || responseData.status;
@@ -63,19 +52,13 @@ async function handleResponse(response) {
 
 // API请求函数
 export async function apiRequest(endpoint, method = 'GET', data = null) {
-  const url = `${API_BASE_URL}${endpoint}`;
-  const options = {
-    method,
-    headers: getHeaders()
-  };
-
-  if (data && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
-    options.body = JSON.stringify(data);
-  }
-
   try {
-    const response = await fetch(url, options);
-    return await handleResponse(response);
+    const response = await apiClient.request({
+      url: endpoint,
+      method,
+      data
+    });
+    return handleResponse(response);
   } catch (error) {
     console.error('API请求失败:', error);
     throw error;

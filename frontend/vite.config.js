@@ -8,9 +8,8 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080/backend',
+        target: 'http://localhost:8080',
         changeOrigin: true
-        // 移除rewrite配置，保持/api前缀
       },
       '/uploads': {
         target: 'http://localhost:8080/backend',
