@@ -30,7 +30,14 @@ public class RoleFilter implements Filter {
         roleAccessMap.put("/api/repair/detail", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN, RoleConstants.SERVICE_PROVIDER));
         roleAccessMap.put("/api/property/fee/list", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN));
         roleAccessMap.put("/api/parking/space/list", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN));
+        roleAccessMap.put("/api/parking/application", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN));
+        roleAccessMap.put("/api/parking/application/list", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN));
+        roleAccessMap.put("/api/parking/application/review", Set.of(RoleConstants.PROPERTY_ADMIN));
+        roleAccessMap.put("/api/parking/space/release", Set.of(RoleConstants.PROPERTY_ADMIN));
         roleAccessMap.put("/api/visitor/register", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN));
+        roleAccessMap.put("/api/visitor/list", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN));
+        roleAccessMap.put("/api/message", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN, RoleConstants.SERVICE_PROVIDER));
+        roleAccessMap.put("/api/message/", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN, RoleConstants.SERVICE_PROVIDER));
 
         // Property admin can access these endpoints
         roleAccessMap.put("/api/residents", Set.of(RoleConstants.PROPERTY_ADMIN));
@@ -55,6 +62,7 @@ public class RoleFilter implements Filter {
         roleAccessMap.put("/api/activities/cancel", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN));
         roleAccessMap.put("/api/activities/status", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN));
         roleAccessMap.put("/api/activities/participants", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN));
+        roleAccessMap.put("/api/activities/review", Set.of(RoleConstants.PROPERTY_ADMIN));
 
         // Service provider can access these endpoints
         roleAccessMap.put("/api/service/tasks", Set.of(RoleConstants.SERVICE_PROVIDER));
@@ -64,6 +72,12 @@ public class RoleFilter implements Filter {
         roleAccessMap.put("/api/community", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN, RoleConstants.SERVICE_PROVIDER));
         roleAccessMap.put("/api/community/", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN, RoleConstants.SERVICE_PROVIDER));
 
+        roleAccessMap.put("/api/second-hand", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN, RoleConstants.SERVICE_PROVIDER));
+        roleAccessMap.put("/api/second-hand/", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN, RoleConstants.SERVICE_PROVIDER));
+        roleAccessMap.put("/api/skills", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN, RoleConstants.SERVICE_PROVIDER));
+        roleAccessMap.put("/api/skills/", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN, RoleConstants.SERVICE_PROVIDER));
+        roleAccessMap.put("/api/lost-found", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN, RoleConstants.SERVICE_PROVIDER));
+        roleAccessMap.put("/api/lost-found/", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN, RoleConstants.SERVICE_PROVIDER));
         // Add property fee endpoints
         roleAccessMap.put("/api/property-fee", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN));
         roleAccessMap.put("/api/property-fee/", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN));

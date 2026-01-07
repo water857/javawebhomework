@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>车位申请</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+<div class="container py-4">
+    <h1 class="mb-4">车位申请</h1>
+    <button class="btn btn-primary mb-3" onclick="loadSpaces()">刷新车位</button>
+    <div class="row" id="spaceList"></div>
+
+    <h2 class="mt-5">我的申请</h2>
+    <button class="btn btn-outline-secondary mb-2" onclick="loadApplications()">刷新申请</button>
+    <ul class="list-group" id="applicationList"></ul>
+</div>
+<script>
+const token = localStorage.getItem('token');
+function authHeader() {
+  return token ? { 'Authorization': `Bearer ${token}` } : {};
+}
+
+async function loadSpaces() {
+  const resp = await fetch('/backend/api/parking/space/list', { headers: authHeader() });
+  const data = await resp.json();
+  const list = document.getElementById('spaceList');
+  list.innerHTML = '';
+  (data.data || []).forEach(space => {
+    const col = document.createElement('div');
+    col.className = 'col-md-4 mb-3';
+    col.innerHTML = `
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">${space.code}</h5>
+          <p class="card-text">状态：${space.status}</p>
+          <button class="btn btn-sm btn-success" ${space.status !== 'available' ? 'disabled' : ''} onclick="applySpace(${space.id})">申请</button>
+        </div>
+      </div>
+    `;
+    list.appendChild(col);
+  });
+}
+
+async function applySpace(id) {
+  await fetch('/backend/api/parking/application', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...authHeader() },
+    body: JSON.stringify({ parkingId: id })
+  });
+  loadApplications();
+}
+
+async function loadApplications() {
+  const resp = await fetch('/backend/api/parking/application/list', { headers: authHeader() });
+  const data = await resp.json();
+  const list = document.getElementById('applicationList');
+  list.innerHTML = '';
+  (data.data || []).forEach(app => {
+    const item = document.createElement('li');
+    item.className = 'list-group-item d-flex justify-content-between';
+    item.textContent = `申请ID ${app.id} - 车位 ${app.parkingId} - ${app.status}`;
+    list.appendChild(item);
+  });
+}
+
+loadSpaces();
+loadApplications();
+</script>
+</body>
+</html>
