@@ -187,6 +187,66 @@
         <url-pattern>/uploads/*</url-pattern>
     </servlet-mapping>
 
+    <!-- 私信Servlet -->
+    <servlet>
+        <servlet-name>MessageServlet</servlet-name>
+        <servlet-class>com.smartcommunity.servlet.MessageServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MessageServlet</servlet-name>
+        <url-pattern>/api/message/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- 车位管理Servlet -->
+    <servlet>
+        <servlet-name>ParkingServlet</servlet-name>
+        <servlet-class>com.smartcommunity.servlet.ParkingServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ParkingServlet</servlet-name>
+        <url-pattern>/api/parking/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- 访客登记Servlet -->
+    <servlet>
+        <servlet-name>VisitorServlet</servlet-name>
+        <servlet-class>com.smartcommunity.servlet.VisitorServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>VisitorServlet</servlet-name>
+        <url-pattern>/api/visitor/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- 二手市场Servlet -->
+    <servlet>
+        <servlet-name>SecondHandServlet</servlet-name>
+        <servlet-class>com.smartcommunity.servlet.SecondHandServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SecondHandServlet</servlet-name>
+        <url-pattern>/api/second-hand/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- 技能交换Servlet -->
+    <servlet>
+        <servlet-name>SkillShareServlet</servlet-name>
+        <servlet-class>com.smartcommunity.servlet.SkillShareServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SkillShareServlet</servlet-name>
+        <url-pattern>/api/skills/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- 失物招领Servlet -->
+    <servlet>
+        <servlet-name>LostAndFoundServlet</servlet-name>
+        <servlet-class>com.smartcommunity.servlet.LostAndFoundServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LostAndFoundServlet</servlet-name>
+        <url-pattern>/api/lost-found/*</url-pattern>
+    </servlet-mapping>
+
     <!-- 物业费管理Servlet -->
     <servlet>
         <servlet-name>PropertyFeeServlet</servlet-name>
