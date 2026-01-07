@@ -55,6 +55,56 @@
           <p>查看和参与社区组织的各种活动</p>
           <button class="btn" @click="handleActivities">查看活动</button>
         </div>
+        <div class="feature-card">
+          <h3>私信会话</h3>
+          <p>查看与居民之间的私信对话</p>
+          <button class="btn" @click="handleMessages">进入私信</button>
+        </div>
+        <div class="feature-card">
+          <h3>车位申请</h3>
+          <p>查看车位并提交申请</p>
+          <button class="btn" @click="handleParking">申请车位</button>
+        </div>
+        <div class="feature-card">
+          <h3>管理员车位审批</h3>
+          <p>管理员审核车位申请</p>
+          <button class="btn" @click="handleParkingAdmin">进入审批</button>
+        </div>
+        <div class="feature-card">
+          <h3>访客登记</h3>
+          <p>登记访客来访信息</p>
+          <button class="btn" @click="handleVisitor">登记访客</button>
+        </div>
+        <div class="feature-card">
+          <h3>管理员访客记录</h3>
+          <p>管理员查看全部访客记录</p>
+          <button class="btn" @click="handleVisitorAdmin">查看记录</button>
+        </div>
+        <div class="feature-card">
+          <h3>二手市场</h3>
+          <p>发布和查看二手商品</p>
+          <button class="btn" @click="handleSecondHand">进入市场</button>
+        </div>
+        <div class="feature-card">
+          <h3>技能交换</h3>
+          <p>发布和查看技能互助信息</p>
+          <button class="btn" @click="handleSkillShare">查看技能</button>
+        </div>
+        <div class="feature-card">
+          <h3>失物招领</h3>
+          <p>发布丢失或拾到信息</p>
+          <button class="btn" @click="handleLostFound">查看列表</button>
+        </div>
+        <div class="feature-card">
+          <h3>活动回顾详情</h3>
+          <p>查看活动回顾展示</p>
+          <button class="btn" @click="handleActivityDetail">查看回顾</button>
+        </div>
+        <div class="feature-card">
+          <h3>活动回顾填写</h3>
+          <p>管理员填写活动回顾</p>
+          <button class="btn" @click="handleActivityReview">填写回顾</button>
+        </div>
       </div>
     </div>
   </div>
@@ -174,6 +224,36 @@ export default {
     handlePropertyFee() {
       // 跳转到物业费账单查询页面
       this.$router.push('/resident/property-fee');
+    },
+    handleMessages() {
+      this.$router.push('/resident/messages');
+    },
+    handleParking() {
+      this.$router.push('/resident/parking');
+    },
+    handleParkingAdmin() {
+      this.$router.push('/resident/parking-admin');
+    },
+    handleVisitor() {
+      this.$router.push('/resident/visitor');
+    },
+    handleVisitorAdmin() {
+      this.$router.push('/resident/visitor-admin');
+    },
+    handleSecondHand() {
+      this.$router.push('/resident/second-hand');
+    },
+    handleSkillShare() {
+      this.$router.push('/resident/skill-share');
+    },
+    handleLostFound() {
+      this.$router.push('/resident/lost-found');
+    },
+    handleActivityReview() {
+      this.$router.push('/resident/activity-review');
+    },
+    handleActivityDetail() {
+      this.$router.push('/resident/activity-detail/1');
     }
   }
 }

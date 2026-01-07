@@ -50,6 +50,21 @@
             <button class="btn" @click="handlePropertyFeeReconciliation">对账管理</button>
           </div>
         </div>
+        <div class="feature-card">
+          <h3>车位审批</h3>
+          <p>审核居民车位申请并释放车位</p>
+          <button class="btn" @click="handleParkingAdmin">进入审批</button>
+        </div>
+        <div class="feature-card">
+          <h3>访客记录</h3>
+          <p>查看全部访客登记信息</p>
+          <button class="btn" @click="handleVisitorAdmin">查看记录</button>
+        </div>
+        <div class="feature-card">
+          <h3>活动回顾</h3>
+          <p>填写活动回顾并展示</p>
+          <button class="btn" @click="handleActivityReview">填写回顾</button>
+        </div>
       </div>
     </div>
   </div>
@@ -111,6 +126,15 @@ export default {
     handlePropertyFeeReconciliation() {
       // 跳转到物业费对账管理页面
       this.$router.push('/admin/property-fee-reconciliation')
+    },
+    handleParkingAdmin() {
+      this.$router.push('/resident/parking-admin')
+    },
+    handleVisitorAdmin() {
+      this.$router.push('/resident/visitor-admin')
+    },
+    handleActivityReview() {
+      this.$router.push('/resident/activity-review')
     },
     handleLogout() {
       // 清除本地存储的token和用户信息
