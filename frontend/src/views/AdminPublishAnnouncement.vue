@@ -2,7 +2,10 @@
   <div class="container">
     <header>
       <h1>发布公告</h1>
-      <button class="btn" @click="handleBack">返回公告列表</button>
+      <div class="header-actions">
+        <button class="btn" @click="handleHome">返回首页</button>
+        <button class="btn" @click="handleBack">返回公告列表</button>
+      </div>
     </header>
 
     <div class="publish-form">
@@ -42,6 +45,9 @@ export default {
     }
   },
   methods: {
+    handleHome() {
+      this.$router.push('/admin');
+    },
     async handlePublish() {
       this.submitting = true;
       try {
@@ -109,6 +115,11 @@ header {
   margin-bottom: 20px;
   padding-bottom: 10px;
   border-bottom: 1px solid #eee;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
 }
 
 .publish-form {

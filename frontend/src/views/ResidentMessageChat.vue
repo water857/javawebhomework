@@ -2,19 +2,26 @@
   <div class="container">
     <header>
       <h1>私信对话</h1>
-      <button class="btn" @click="fetchMessages">刷新</button>
+      <div class="header-actions">
+        <button class="btn" @click="handleBackList">返回会话列表</button>
+        <button class="btn" @click="handleBack">返回首页</button>
+        <button class="btn" @click="fetchMessages">刷新</button>
+      </div>
     </header>
 
-    <div class="chat-box">
-      <div v-for="msg in messages" :key="msg.id" :class="['bubble', msg.fromUserId === currentUserId ? 'bubble-right' : 'bubble-left']">
-        {{ msg.content }}
+    <div class="chat-layout">
+      <div class="chat-box">
+        <div v-if="messages.length === 0" class="empty">暂无消息，先发送一句问候吧。</div>
+        <div v-for="msg in messages" :key="msg.id" :class="['bubble', msg.fromUserId === currentUserId ? 'bubble-right' : 'bubble-left']">
+          {{ msg.content }}
+        </div>
       </div>
-    </div>
 
-    <div class="input-row">
-      <input v-model="content" placeholder="输入消息" />
-      <button class="btn" @click="sendMessage">发送</button>
-      <button class="btn" @click="markRead">标记已读</button>
+      <div class="input-row">
+        <input v-model="content" placeholder="输入消息" />
+        <button class="btn" @click="sendMessage">发送</button>
+        <button class="btn" @click="markRead">标记已读</button>
+      </div>
     </div>
   </div>
 </template>
@@ -36,6 +43,12 @@ export default {
     this.fetchMessages()
   },
   methods: {
+    handleBack() {
+      this.$router.push('/resident')
+    },
+    handleBackList() {
+      this.$router.push('/resident/messages')
+    },
     async fetchMessages() {
       try {
         const response = await axios.get('/message/list', {
@@ -76,16 +89,26 @@ export default {
 </script>
 
 <style scoped>
-.chat-box {
-  min-height: 300px;
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+.chat-layout {
+  display: flex;
+  flex-direction: column;
+  height: 70vh;
+  margin-top: 16px;
   border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  border-radius: 10px;
+  background: #fff;
+}
+.chat-box {
+  flex: 1;
   padding: 12px;
-  margin: 20px 0;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background: #fff;
+  overflow-y: auto;
 }
 .bubble {
   max-width: 70%;
@@ -104,9 +127,19 @@ export default {
 .input-row {
   display: flex;
   gap: 10px;
+  padding: 12px;
+  border-top: 1px solid #eee;
+  position: sticky;
+  bottom: 0;
+  background: #fff;
 }
 .input-row input {
   flex: 1;
   padding: 8px;
+}
+.empty {
+  color: #888;
+  text-align: center;
+  margin-top: 20px;
 }
 </style>

@@ -2,7 +2,10 @@
   <div class="container">
     <header>
       <h1>公告详情</h1>
-      <button class="btn" @click="handleBack">返回公告列表</button>
+      <div class="header-actions">
+        <button class="btn" @click="handleHome">返回首页</button>
+        <button class="btn" @click="handleBack">返回公告列表</button>
+      </div>
     </header>
 
     <div v-if="loading" class="loading">加载中...</div>
@@ -73,6 +76,9 @@ export default {
     this.fetchAnnouncementDetail();
   },
   methods: {
+    handleHome() {
+      this.$router.push('/admin');
+    },
     async fetchAnnouncementDetail() {
       this.loading = true;
       try {
@@ -159,6 +165,11 @@ header {
   margin-bottom: 20px;
   padding-bottom: 10px;
   border-bottom: 1px solid #eee;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
 }
 
 .loading, .no-data {

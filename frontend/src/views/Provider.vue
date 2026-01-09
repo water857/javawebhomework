@@ -4,6 +4,7 @@
       <h1>服务商中心</h1>
       <div class="user-info">
         <span>欢迎您，{{ username }}</span>
+        <button class="btn" @click="handleBack">返回首页</button>
         <button class="btn" @click="handleProfile">个人中心</button>
         <button class="btn" @click="handleLogout">退出登录</button>
       </div>
@@ -55,6 +56,9 @@ export default {
     this.username = localStorage.getItem('username')
   },
   methods: {
+    handleBack() {
+      this.$router.push('/provider')
+    },
     handleProfile() {
       // 跳转到个人中心页面
       this.$router.push('/provider/profile')

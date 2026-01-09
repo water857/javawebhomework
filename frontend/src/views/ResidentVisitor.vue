@@ -2,6 +2,10 @@
   <div class="container">
     <header>
       <h1>访客登记</h1>
+      <div class="header-actions">
+        <button class="btn" @click="handleBack">返回首页</button>
+        <button class="btn" @click="loadRecords">刷新</button>
+      </div>
     </header>
 
     <div class="card">
@@ -17,7 +21,6 @@
     </div>
 
     <h2>我的访客记录</h2>
-    <button class="btn" @click="loadRecords">刷新</button>
     <div class="list">
       <div v-for="record in records" :key="record.id" class="list-item">
         {{ record.visitorName }} - {{ record.phone }} - {{ record.visitTime }}
@@ -42,6 +45,9 @@ export default {
     this.loadRecords()
   },
   methods: {
+    handleBack() {
+      this.$router.push('/resident')
+    },
     async registerVisitor() {
       if (!this.visitorName) return
       try {
@@ -69,6 +75,10 @@ export default {
 </script>
 
 <style scoped>
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
 .card {
   border: 1px solid #e0e0e0;
   padding: 16px;

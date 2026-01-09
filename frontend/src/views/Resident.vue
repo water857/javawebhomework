@@ -4,6 +4,7 @@
       <h1>居民中心</h1>
       <div class="user-info">
         <span>欢迎您，{{ username }}</span>
+        <button class="btn" @click="handleBack">返回首页</button>
         <button class="btn" @click="handleProfile">个人中心</button>
         <button class="btn" @click="handleLogout">退出登录</button>
       </div>
@@ -41,11 +42,6 @@
           <button class="btn" @click="handleAnnouncements">查看公告</button>
         </div>
         <div class="feature-card">
-          <h3>服务预约</h3>
-          <p>预约社区服务（清洁、维修等）</p>
-          <button class="btn">预约服务</button>
-        </div>
-        <div class="feature-card">
           <h3>邻里圈</h3>
           <p>分享生活动态，与邻居互动交流</p>
           <button class="btn" @click="handleCommunity">进入邻里圈</button>
@@ -66,19 +62,9 @@
           <button class="btn" @click="handleParking">申请车位</button>
         </div>
         <div class="feature-card">
-          <h3>管理员车位审批</h3>
-          <p>管理员审核车位申请</p>
-          <button class="btn" @click="handleParkingAdmin">进入审批</button>
-        </div>
-        <div class="feature-card">
           <h3>访客登记</h3>
           <p>登记访客来访信息</p>
           <button class="btn" @click="handleVisitor">登记访客</button>
-        </div>
-        <div class="feature-card">
-          <h3>管理员访客记录</h3>
-          <p>管理员查看全部访客记录</p>
-          <button class="btn" @click="handleVisitorAdmin">查看记录</button>
         </div>
         <div class="feature-card">
           <h3>二手市场</h3>
@@ -94,16 +80,6 @@
           <h3>失物招领</h3>
           <p>发布丢失或拾到信息</p>
           <button class="btn" @click="handleLostFound">查看列表</button>
-        </div>
-        <div class="feature-card">
-          <h3>活动回顾详情</h3>
-          <p>查看活动回顾展示</p>
-          <button class="btn" @click="handleActivityDetail">查看回顾</button>
-        </div>
-        <div class="feature-card">
-          <h3>活动回顾填写</h3>
-          <p>管理员填写活动回顾</p>
-          <button class="btn" @click="handleActivityReview">填写回顾</button>
         </div>
       </div>
     </div>
@@ -182,6 +158,9 @@ export default {
       // 跳转到个人中心页面
       this.$router.push('/resident/profile');
     },
+    handleBack() {
+      this.$router.push('/resident');
+    },
     
     handleRepair() {
       // 跳转到报修页面
@@ -231,14 +210,8 @@ export default {
     handleParking() {
       this.$router.push('/resident/parking');
     },
-    handleParkingAdmin() {
-      this.$router.push('/resident/parking-admin');
-    },
     handleVisitor() {
       this.$router.push('/resident/visitor');
-    },
-    handleVisitorAdmin() {
-      this.$router.push('/resident/visitor-admin');
     },
     handleSecondHand() {
       this.$router.push('/resident/second-hand');
@@ -248,12 +221,6 @@ export default {
     },
     handleLostFound() {
       this.$router.push('/resident/lost-found');
-    },
-    handleActivityReview() {
-      this.$router.push('/resident/activity-review');
-    },
-    handleActivityDetail() {
-      this.$router.push('/resident/activity-detail/1');
     }
   }
 }

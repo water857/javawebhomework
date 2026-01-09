@@ -2,11 +2,26 @@
   <div class="container">
     <header>
       <h1>私信会话列表</h1>
-      <button class="btn" @click="fetchConversations">刷新</button>
+      <div class="header-actions">
+        <button class="btn" @click="handleBack">返回首页</button>
+        <button class="btn" @click="fetchConversations">刷新</button>
+      </div>
     </header>
 
-    <div class="list">
-      <div v-if="conversations.length === 0" class="empty">暂无会话</div>
+    <div class="card">
+      <h2>发起新私信</h2>
+      <p class="muted">输入对方用户ID即可发起聊天。</p>
+      <div class="start-row">
+        <input v-model.trim="newUserId" placeholder="对方用户ID" />
+        <button class="btn" @click="startChat">发起聊天</button>
+      </div>
+    </div>
+
+    <div class="list card">
+      <h2>最近会话</h2>
+      <div v-if="conversations.length === 0" class="empty">
+        暂无会话，您可以在上方输入用户ID发起第一条私信。
+      </div>
       <div v-for="item in conversations" :key="item.otherUserId" class="list-item">
         <div>
           <div class="title">{{ item.otherRealName || item.otherUsername }}</div>
@@ -28,13 +43,17 @@ export default {
   name: 'ResidentMessages',
   data() {
     return {
-      conversations: []
+      conversations: [],
+      newUserId: ''
     }
   },
   mounted() {
     this.fetchConversations()
   },
   methods: {
+    handleBack() {
+      this.$router.push('/resident')
+    },
     async fetchConversations() {
       try {
         const response = await axios.get('/message/list')
@@ -42,6 +61,10 @@ export default {
       } catch (error) {
         console.error('获取会话失败:', error)
       }
+    },
+    startChat() {
+      if (!this.newUserId) return
+      this.$router.push(`/resident/messages/${this.newUserId}`)
     },
     goChat(userId) {
       this.$router.push(`/resident/messages/${userId}`)
@@ -51,6 +74,30 @@ export default {
 </script>
 
 <style scoped>
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+.card {
+  border: 1px solid #e0e0e0;
+  padding: 16px;
+  border-radius: 10px;
+  margin-top: 16px;
+  background: #fff;
+}
+.muted {
+  color: #666;
+  font-size: 14px;
+  margin: 4px 0 12px;
+}
+.start-row {
+  display: flex;
+  gap: 10px;
+}
+.start-row input {
+  flex: 1;
+  padding: 8px 10px;
+}
 .list {
   margin-top: 20px;
 }
@@ -83,7 +130,7 @@ export default {
   gap: 8px;
 }
 .empty {
-  padding: 20px;
+  padding: 16px 8px;
   color: #888;
 }
 </style>

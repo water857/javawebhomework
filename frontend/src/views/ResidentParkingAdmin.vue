@@ -2,7 +2,10 @@
   <div class="container">
     <header>
       <h1>车位申请审批</h1>
-      <button class="btn" @click="loadApplications">刷新</button>
+      <div class="header-actions">
+        <button class="btn" @click="handleBack">返回首页</button>
+        <button class="btn" @click="loadApplications">刷新</button>
+      </div>
     </header>
 
     <div class="list">
@@ -40,6 +43,9 @@ export default {
     this.loadApplications()
   },
   methods: {
+    handleBack() {
+      this.$router.push('/admin')
+    },
     async loadApplications() {
       try {
         const response = await axios.get('/parking/application/list')
@@ -69,6 +75,10 @@ export default {
 </script>
 
 <style scoped>
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
 .list {
   margin-top: 20px;
 }
