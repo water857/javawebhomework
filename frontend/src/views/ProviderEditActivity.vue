@@ -2,7 +2,10 @@
   <div class="container">
     <header>
       <h1>编辑活动</h1>
-      <button class="btn" @click="handleBack">返回活动列表</button>
+      <div class="header-actions">
+        <button class="btn" @click="handleHome">返回首页</button>
+        <button class="btn" @click="handleBack">返回活动列表</button>
+      </div>
     </header>
 
     <div class="publish-form">
@@ -72,6 +75,9 @@ export default {
     this.loadActivityData()
   },
   methods: {
+    handleHome() {
+      this.$router.push('/provider')
+    },
     async loadActivityData() {
       const activityId = this.$route.params.id
       try {
@@ -169,6 +175,11 @@ header {
   margin-bottom: 20px;
   padding-bottom: 10px;
   border-bottom: 1px solid #eee;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
 }
 
 .publish-form {
