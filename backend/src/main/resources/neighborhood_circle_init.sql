@@ -99,3 +99,17 @@ INSERT INTO `tags` (`name`) VALUES
 ('美食推荐'),
 ('宠物天地'),
 ('安全提示');
+
+INSERT INTO `community_posts` (`user_id`, `content`, `privacy`, `like_count`, `comment_count`, `view_count`) VALUES
+(1, '今天小区花园里的桂花开了，香味特别好闻～', 'public', 2, 1, 15),
+(4, '求推荐附近靠谱的家政服务，欢迎邻居私信。', 'public', 1, 0, 8);
+
+INSERT INTO `post_comments` (`post_id`, `user_id`, `content`) VALUES
+(1, 4, '闻到了！晚上散步特别舒服。');
+
+INSERT INTO `notifications` (`user_id`, `type`, `content`, `is_read`) VALUES
+(1, 'comment', '李四评论了你的动态：闻到了！晚上散步特别舒服。', false);
+
+INSERT INTO `post_tags` (`post_id`, `tag_id`) VALUES
+(1, 1),
+(2, 3);

@@ -37,7 +37,8 @@ public class SkillShareDAOImpl implements SkillShareDAO {
     @Override
     public List<SkillShare> getSkills() {
         List<SkillShare> skills = new ArrayList<>();
-        String sql = "SELECT id, user_id, skill_name, description, contact, create_time FROM skill_share ORDER BY create_time DESC";
+        String sql = "SELECT skill.id, skill.user_id, skill.skill_name, skill.description, skill.contact, skill.create_time, " +
+                "user.real_name AS publisher_name FROM skill_share skill LEFT JOIN user ON skill.user_id = user.id ORDER BY skill.create_time DESC";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -49,6 +50,7 @@ public class SkillShareDAOImpl implements SkillShareDAO {
                 skill.setDescription(rs.getString("description"));
                 skill.setContact(rs.getString("contact"));
                 skill.setCreateTime(rs.getTimestamp("create_time"));
+                skill.setPublisherName(rs.getString("publisher_name"));
                 skills.add(skill);
             }
         } catch (SQLException e) {

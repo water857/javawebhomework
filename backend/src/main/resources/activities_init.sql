@@ -45,3 +45,12 @@ CREATE TABLE IF NOT EXISTS `activity_images` (
     FOREIGN KEY (`activity_id`) REFERENCES `activities`(`id`) ON DELETE CASCADE,
     FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `activities` (`user_id`, `title`, `content`, `start_time`, `end_time`, `location`, `max_participants`, `current_participants`, `status`) VALUES
+(2, '邻里运动日', '本周六早晨举办社区健身活动，欢迎报名。', '2024-09-20 08:30:00', '2024-09-20 10:30:00', '社区广场', 30, 2, 'pending'),
+(2, '家庭安全讲座', '邀请消防人员分享家庭安全与应急知识。', '2024-09-25 19:00:00', '2024-09-25 20:30:00', '活动中心会议室', 50, 1, 'pending');
+
+INSERT INTO `activity_participants` (`activity_id`, `user_id`, `status`) VALUES
+(1, 1, 'registered'),
+(1, 4, 'registered'),
+(2, 1, 'registered');

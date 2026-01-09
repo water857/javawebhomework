@@ -40,7 +40,8 @@ CREATE TABLE IF NOT EXISTS `announcement` (
 INSERT INTO `user` (`username`, `password`, `real_name`, `phone`, `email`, `id_card`, `address`, `role`) VALUES
 ('zhangsan', '$2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '张三', '13800138001', 'zhangsan@example.com', '110101199001011234', '1号楼1单元101室', 'resident'),
 ('admin', '$2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '管理员', '13800138002', 'admin@example.com', '110101199001015678', '物业办公室', 'property_admin'),
-('service1', '$2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '服务商1', '13800138003', 'service1@example.com', '110101199001019012', '服务中心', 'service_provider');
+('service1', '$2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '服务商1', '13800138003', 'service1@example.com', '110101199001019012', '服务中心', 'service_provider'),
+('lisi', '$2a$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '李四', '13800138004', 'lisi@example.com', '110101199101012345', '2号楼2单元202室', 'resident');
 
 -- 插入测试公告数据
 INSERT INTO `announcement` (`title`, `content`, `author_id`, `author_name`, `status`, `published_at`) VALUES
@@ -48,3 +49,13 @@ INSERT INTO `announcement` (`title`, `content`, `author_id`, `author_name`, `sta
 ('物业费缴纳通知', '请各位居民及时缴纳本月物业费，缴纳截止日期为下月5日。', 2, '管理员', 1, CURRENT_TIMESTAMP);
 
 -- 导入物业费相关表结构和初始数据
+SOURCE property_fee_init.sql;
+SOURCE activities_init.sql;
+SOURCE neighborhood_circle_init.sql;
+SOURCE second_hand_init.sql;
+SOURCE lost_found_init.sql;
+SOURCE skill_share_init.sql;
+SOURCE parking_init.sql;
+SOURCE visitor_init.sql;
+SOURCE private_message_init.sql;
+SOURCE repair_init.sql;

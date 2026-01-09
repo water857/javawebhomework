@@ -84,7 +84,19 @@ const routes = [
   { path: '/provider/activities', name: 'ProviderActivities', component: () => import('../views/ProviderActivities.vue'), meta: { requiresAuth: true, role: 'service_provider' } },
   { path: '/provider/activities/:id', name: 'ProviderActivityDetail', component: () => import('../views/ProviderActivityDetail.vue'), meta: { requiresAuth: true, role: 'service_provider' } },
   { path: '/provider/activities/publish', name: 'ProviderPublishActivity', component: () => import('../views/ProviderPublishActivity.vue'), meta: { requiresAuth: true, role: 'service_provider' } },
-  { path: '/provider/activities/edit/:id', name: 'ProviderEditActivity', component: () => import('../views/ProviderEditActivity.vue'), meta: { requiresAuth: true, role: 'service_provider' } }
+  { path: '/provider/activities/edit/:id', name: 'ProviderEditActivity', component: () => import('../views/ProviderEditActivity.vue'), meta: { requiresAuth: true, role: 'service_provider' } },
+  {
+    path: '/notifications',
+    name: 'Notifications',
+    component: () => import('../views/Notifications.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/announcements',
+    name: 'Announcements',
+    component: () => import('../views/ResidentAnnouncements.vue'),
+    meta: { requiresAuth: true }
+  }
 ]
 
 const router = createRouter({

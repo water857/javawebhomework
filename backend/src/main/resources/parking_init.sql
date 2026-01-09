@@ -18,3 +18,11 @@ CREATE TABLE IF NOT EXISTS `parking_application` (
     FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
     FOREIGN KEY (`parking_id`) REFERENCES `parking_space` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `parking_space` (`code`, `status`, `owner_id`) VALUES
+('A-01', 'available', NULL),
+('A-02', 'occupied', 1),
+('B-01', 'available', NULL);
+
+INSERT INTO `parking_application` (`user_id`, `parking_id`, `status`) VALUES
+(4, 1, 'pending');

@@ -1,42 +1,53 @@
 <template>
-  <div class="container">
-    <header>
-      <h1>技能交换</h1>
-      <div class="header-actions">
-        <button class="btn" @click="handleBack">返回首页</button>
-        <button class="btn" @click="loadSkills">刷新</button>
+  <div class="page-container">
+    <div class="page-header">
+      <div>
+        <div class="page-title">技能交换</div>
+        <div class="page-subtitle">分享技能，互助学习，社区一起成长。</div>
       </div>
-    </header>
+      <div class="page-actions">
+        <button class="btn btn-secondary" @click="loadSkills">刷新列表</button>
+      </div>
+    </div>
 
-    <div class="content-layout">
-      <section class="panel">
-        <h2>发布技能</h2>
+    <div v-if="notice" class="info-banner">
+      <span>{{ notice }}</span>
+      <button class="btn btn-secondary" @click="notice = ''">知道了</button>
+    </div>
+
+    <div class="card-grid">
+      <section class="section-card">
+        <div class="section-title">发布技能</div>
         <div class="form-row">
           <label>技能名称</label>
-          <input v-model="skillName" />
+          <input v-model.trim="skillName" placeholder="例如：钢琴陪练" />
         </div>
         <div class="form-row">
           <label>描述</label>
-          <textarea v-model="description"></textarea>
+          <textarea v-model.trim="description" placeholder="描述可提供的帮助" ></textarea>
         </div>
         <div class="form-row">
           <label>联系方式</label>
-          <input v-model="contact" />
+          <input v-model.trim="contact" placeholder="电话/微信" />
         </div>
-        <button class="btn" @click="publish">发布</button>
+        <button class="btn btn-primary" @click="publish">发布</button>
       </section>
 
-      <section class="panel">
-        <h2>最新列表</h2>
-        <div v-if="skills.length === 0" class="empty">暂无技能信息，欢迎发布第一条。</div>
-        <div v-else class="grid">
-          <div v-for="skill in skills" :key="skill.id" class="card">
+      <section class="section-card">
+        <div class="section-title">最新列表</div>
+        <div class="search-bar">
+          <input v-model.trim="keyword" placeholder="搜索技能或描述" />
+        </div>
+        <div v-if="filteredSkills.length === 0" class="empty-state">暂无技能信息，欢迎发布第一条。</div>
+        <div v-else class="card-grid">
+          <div v-for="skill in filteredSkills" :key="skill.id" class="card">
             <div class="card-header">
               <h3>{{ skill.skillName }}</h3>
               <span class="tag">技能互助</span>
             </div>
-            <p class="desc">{{ skill.description }}</p>
-            <p class="meta">联系方式：{{ skill.contact }}</p>
+            <p class="desc">{{ skill.description || '暂无描述' }}</p>
+            <p class="meta">联系方式：{{ skill.contact || '暂无' }}</p>
+            <p class="meta">发布者：{{ skill.publisherName || skill.publisher_name || '社区居民' }}</p>
           </div>
         </div>
       </section>
@@ -54,16 +65,24 @@ export default {
       skillName: '',
       description: '',
       contact: '',
-      skills: []
+      skills: [],
+      keyword: '',
+      notice: ''
+    }
+  },
+  computed: {
+    filteredSkills() {
+      return this.skills.filter(skill => {
+        return this.keyword
+          ? `${skill.skillName}${skill.description || ''}`.includes(this.keyword)
+          : true
+      })
     }
   },
   mounted() {
     this.loadSkills()
   },
   methods: {
-    handleBack() {
-      this.$router.push('/resident')
-    },
     async loadSkills() {
       try {
         const response = await axios.get('/skills/list')
@@ -83,6 +102,7 @@ export default {
         this.skillName = ''
         this.description = ''
         this.contact = ''
+        this.notice = '发布成功，已同步到技能交换列表。'
         this.loadSkills()
       } catch (error) {
         console.error('发布失败:', error)
@@ -93,60 +113,18 @@ export default {
 </script>
 
 <style scoped>
-.header-actions {
-  display: flex;
-  gap: 10px;
-}
-.content-layout {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 20px;
-  margin-top: 20px;
-}
-.panel {
-  border: 1px solid #e0e0e0;
-  padding: 16px;
-  border-radius: 12px;
-  background: #fff;
-}
 .form-row {
   display: flex;
   flex-direction: column;
-  margin-bottom: 10px;
-}
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
-}
-.card {
-  border: 1px solid #e0e0e0;
-  border-radius: 10px;
-  padding: 12px;
-  background: #fafafa;
-}
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.tag {
-  font-size: 12px;
-  padding: 2px 8px;
-  border-radius: 10px;
-  background: #e6f7ff;
-  color: #1677ff;
+  margin-bottom: 12px;
 }
 .desc {
-  margin: 8px 0;
-  color: #444;
+  color: #4b5563;
+  margin-bottom: 0.5rem;
 }
 .meta {
-  color: #666;
-  font-size: 13px;
-}
-.empty {
-  color: #888;
-  padding: 12px;
+  color: #6b7280;
+  font-size: 0.9rem;
+  margin-bottom: 0.35rem;
 }
 </style>

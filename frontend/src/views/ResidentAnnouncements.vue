@@ -1,19 +1,24 @@
 <template>
-  <div class="container">
-    <header>
-      <h1>社区公告</h1>
-      <button class="btn" @click="handleBack">返回首页</button>
-    </header>
+  <div class="page-container">
+    <div class="page-header">
+      <div>
+        <div class="page-title">社区公告</div>
+        <div class="page-subtitle">查看最新公告与通知内容。</div>
+      </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary" @click="fetchAnnouncements">刷新</button>
+      </div>
+    </div>
 
-    <div class="announcements-section">
-      <div class="filter-section">
+    <div class="section-card">
+      <div class="search-bar">
         <input type="text" v-model="searchQuery" placeholder="搜索公告" class="search-input">
-        <button class="btn" @click="fetchAnnouncements">搜索</button>
+        <button class="btn btn-primary" @click="fetchAnnouncements">搜索</button>
       </div>
 
       <div class="announcements-list">
         <div v-if="loading" class="loading">加载中...</div>
-        <div v-else-if="announcements.length === 0" class="no-data">暂无公告</div>
+        <div v-else-if="announcements.length === 0" class="empty-state">暂无公告</div>
         <div v-else class="announcement-card" v-for="announcement in announcements" :key="announcement.id">
           <div @click="handleAnnouncementDetail(announcement.id)">
             <h3>{{ announcement.title }}</h3>
@@ -27,9 +32,9 @@
       </div>
 
       <div class="pagination" v-if="totalPages > 1">
-        <button class="btn" @click="currentPage > 1 && (currentPage--, fetchAnnouncements())" :disabled="currentPage === 1">上一页</button>
+        <button class="btn btn-secondary" @click="currentPage > 1 && (currentPage--, fetchAnnouncements())" :disabled="currentPage === 1">上一页</button>
         <span>{{ currentPage }}/{{ totalPages }}</span>
-        <button class="btn" @click="currentPage < totalPages && (currentPage++, fetchAnnouncements())" :disabled="currentPage === totalPages">下一页</button>
+        <button class="btn btn-secondary" @click="currentPage < totalPages && (currentPage++, fetchAnnouncements())" :disabled="currentPage === totalPages">下一页</button>
       </div>
     </div>
   </div>
@@ -77,32 +82,20 @@ export default {
       }
     },
     handleAnnouncementDetail(announcementId) {
-      // 居民查看公告详情，这里可以跳转到详情页面，或者直接在当前页面展开详情
-      // 为了简化实现，我们直接在控制台打印公告ID，并弹出一个alert显示公告内容
-      // 实际项目中应该跳转到详情页面
       const announcement = this.announcements.find(a => a.id === announcementId);
       if (announcement) {
         alert(`公告详情\n\n标题: ${announcement.title}\n\n内容: ${announcement.content}\n\n发布者: ${announcement.authorName}\n\n发布时间: ${this.formatDateTime(announcement.publishedAt || announcement.createdAt)}`);
       }
     },
-    handleBack() {
-      this.$router.push('/resident');
-    },
     formatDateTime(dateTime) {
       if (!dateTime) return '';
-      
-      // 如果已经是字符串格式，直接返回（后端已格式化）
       if (typeof dateTime === 'string') {
         return dateTime;
       }
-      
-      // 否则，处理时间戳或日期对象
       const date = new Date(dateTime);
       if (isNaN(date.getTime())) {
         return '';
       }
-      
-      // 确保格式一致性
       return date.toLocaleString('zh-CN', {
         year: 'numeric',
         month: '2-digit',
@@ -122,105 +115,37 @@ export default {
 </script>
 
 <style scoped>
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #eee;
-}
-
-.header-actions {
-  display: flex;
-  gap: 10px;
-}
-
-.announcements-section {
-  background-color: #fff;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-}
-
-.filter-section {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.search-input {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
-  width: 250px;
-}
-
-.announcements-list {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
 .announcement-card {
-  border: 1px solid #eee;
-  border-radius: 8px;
-  padding: 15px;
-  background-color: #fafafa;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  background: #fff;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: box-shadow 0.2s ease;
 }
 
 .announcement-card:hover {
-  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
-}
-
-.announcement-card h3 {
-  margin: 0 0 8px 0;
-  color: #333;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
 }
 
 .announcement-content {
-  margin: 5px 0;
-  color: #666;
-  font-size: 14px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  line-height: 1.5;
-  height: 3em;
+  color: #4b5563;
+  margin: 0.75rem 0;
 }
 
 .announcement-info {
   display: flex;
-  gap: 15px;
-  margin-top: 10px;
-  font-size: 14px;
-  color: #888;
+  justify-content: space-between;
+  color: #6b7280;
+  font-size: 0.85rem;
 }
 
 .pagination {
   display: flex;
   justify-content: center;
+  gap: 1rem;
   align-items: center;
-  margin-top: 20px;
-  gap: 10px;
-}
-
-.loading, .no-data {
-  text-align: center;
-  padding: 50px 0;
-  color: #666;
+  margin-top: 1rem;
 }
 </style>

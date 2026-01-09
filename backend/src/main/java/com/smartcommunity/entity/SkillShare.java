@@ -9,6 +9,7 @@ public class SkillShare {
     private String description;
     private String contact;
     private Timestamp createTime;
+    private String publisherName;
 
     public int getId() {
         return id;
@@ -56,5 +57,13 @@ public class SkillShare {
 
     public void setCreateTime(Timestamp createTime) {
         this.createTime = createTime;
+    }
+
+    public String getPublisherName() {
+        return publisherName;
+    }
+
+    public void setPublisherName(String publisherName) {
+        this.publisherName = publisherName;
     }
 }

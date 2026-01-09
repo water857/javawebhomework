@@ -1,35 +1,39 @@
 <template>
-  <div class="container">
-    <header>
-      <h1>私信会话列表</h1>
-      <div class="header-actions">
-        <button class="btn" @click="handleBack">返回首页</button>
-        <button class="btn" @click="fetchConversations">刷新</button>
+  <div class="page-container">
+    <div class="page-header">
+      <div>
+        <div class="page-title">私信会话</div>
+        <div class="page-subtitle">选择会话进入聊天，或输入用户 ID 发起新对话。</div>
       </div>
-    </header>
-
-    <div class="card">
-      <h2>发起新私信</h2>
-      <p class="muted">输入对方用户ID即可发起聊天。</p>
-      <div class="start-row">
-        <input v-model.trim="newUserId" placeholder="对方用户ID" />
-        <button class="btn" @click="startChat">发起聊天</button>
+      <div class="page-actions">
+        <button class="btn btn-secondary" @click="fetchConversations">刷新会话</button>
       </div>
     </div>
 
-    <div class="list card">
-      <h2>最近会话</h2>
-      <div v-if="conversations.length === 0" class="empty">
+    <div class="section-card" style="margin-bottom: 1.5rem;">
+      <div class="section-title">快速发起私信</div>
+      <p class="muted">提示：输入对方的用户 ID，即可创建会话并进入聊天。</p>
+      <div class="start-row">
+        <input v-model.trim="newUserId" placeholder="对方用户ID" />
+        <button class="btn btn-primary" @click="startChat">发起聊天</button>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-title">最近会话</div>
+      <div v-if="conversations.length === 0" class="empty-state">
         暂无会话，您可以在上方输入用户ID发起第一条私信。
       </div>
-      <div v-for="item in conversations" :key="item.otherUserId" class="list-item">
-        <div>
-          <div class="title">{{ item.otherRealName || item.otherUsername }}</div>
-          <div class="subtitle">{{ item.lastMessage }}</div>
-        </div>
-        <div class="actions">
-          <span class="badge" v-if="item.unreadCount">{{ item.unreadCount }}</span>
-          <button class="btn" @click="goChat(item.otherUserId)">进入对话</button>
+      <div v-else class="list">
+        <div v-for="item in conversations" :key="item.otherUserId" class="list-item">
+          <div>
+            <div class="title">{{ item.otherRealName || item.otherUsername }}</div>
+            <div class="subtitle">{{ item.lastMessage }}</div>
+          </div>
+          <div class="actions">
+            <span class="badge" v-if="item.unreadCount">{{ item.unreadCount }}</span>
+            <button class="btn btn-secondary" @click="goChat(item.otherUserId)">进入对话</button>
+          </div>
         </div>
       </div>
     </div>
@@ -51,9 +55,6 @@ export default {
     this.fetchConversations()
   },
   methods: {
-    handleBack() {
-      this.$router.push('/resident')
-    },
     async fetchConversations() {
       try {
         const response = await axios.get('/message/list')
@@ -74,21 +75,10 @@ export default {
 </script>
 
 <style scoped>
-.header-actions {
-  display: flex;
-  gap: 10px;
-}
-.card {
-  border: 1px solid #e0e0e0;
-  padding: 16px;
-  border-radius: 10px;
-  margin-top: 16px;
-  background: #fff;
-}
 .muted {
-  color: #666;
-  font-size: 14px;
-  margin: 4px 0 12px;
+  color: #6b7280;
+  font-size: 0.9rem;
+  margin: 0.25rem 0 0.75rem;
 }
 .start-row {
   display: flex;
@@ -96,41 +86,36 @@ export default {
 }
 .start-row input {
   flex: 1;
-  padding: 8px 10px;
 }
 .list {
-  margin-top: 20px;
+  margin-top: 1rem;
 }
 .list-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 12px;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
   margin-bottom: 12px;
 }
 .title {
   font-weight: 600;
 }
 .subtitle {
-  color: #666;
-  font-size: 14px;
-}
-.badge {
-  background-color: #ff4d4f;
-  color: #fff;
-  border-radius: 12px;
-  padding: 2px 8px;
-  margin-right: 10px;
+  color: #6b7280;
+  font-size: 0.9rem;
 }
 .actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.75rem;
 }
-.empty {
-  padding: 16px 8px;
-  color: #888;
+.badge {
+  background: #fee2e2;
+  color: #b91c1c;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
 }
 </style>

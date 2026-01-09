@@ -4,6 +4,9 @@ import com.google.gson.Gson;
 import com.smartcommunity.dao.LostAndFoundDAO;
 import com.smartcommunity.dao.impl.LostAndFoundDAOImpl;
 import com.smartcommunity.entity.LostAndFound;
+import com.smartcommunity.entity.User;
+import com.smartcommunity.service.UserService;
+import com.smartcommunity.service.impl.UserServiceImpl;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -18,6 +21,7 @@ import java.util.Map;
 @WebServlet(name = "LostAndFoundServlet", urlPatterns = "/api/lost-found/*")
 public class LostAndFoundServlet extends HttpServlet {
     private final LostAndFoundDAO lostAndFoundDAO = new LostAndFoundDAOImpl();
+    private final UserService userService = new UserServiceImpl();
     private final Gson gson = new Gson();
 
     @Override
@@ -69,7 +73,16 @@ public class LostAndFoundServlet extends HttpServlet {
                 return;
             }
 
+            String username = (String) req.getAttribute("username");
+            User currentUser = userService.getUserByUsername(username);
+            if (currentUser == null) {
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                out.write(gson.toJson(new Response("error", "用户未登录")));
+                return;
+            }
+
             LostAndFound record = new LostAndFound();
+            record.setUserId(currentUser.getId());
             record.setType(publishRequest.getType());
             record.setTitle(publishRequest.getTitle());
             record.setDescription(publishRequest.getDescription());
