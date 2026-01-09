@@ -1,5 +1,5 @@
 <template>
-  <nav class="app-nav">
+  <nav class="app-nav" @click.stop>
     <div class="nav-brand" @click="goHome">
       <span class="logo">🏘️</span>
       <span class="brand-text">智能社区服务平台</span>
@@ -7,33 +7,45 @@
     <div class="nav-links">
       <router-link class="nav-link" :to="homeRoute">首页</router-link>
       <div class="nav-group" v-for="group in menuGroups" :key="group.label">
-        <button class="nav-link nav-link-button" type="button">
+        <button
+          class="nav-link nav-link-button"
+          type="button"
+          :aria-expanded="isOpen(group.label)"
+          @click.stop="toggleDropdown(group.label)"
+        >
           {{ group.label }}
           <span class="caret">▾</span>
         </button>
-        <div class="nav-dropdown">
+        <div class="nav-dropdown" v-show="isOpen(group.label)">
           <div v-if="group.items.length === 0" class="nav-empty">暂无可访问功能</div>
           <router-link
             v-for="item in group.items"
             :key="item.label"
             class="nav-dropdown-item"
             :to="item.path"
+            @click.native="closeDropdown"
           >
             {{ item.label }}
           </router-link>
         </div>
       </div>
       <div class="nav-group">
-        <button class="nav-link nav-link-button" type="button">
+        <button
+          class="nav-link nav-link-button"
+          type="button"
+          :aria-expanded="isOpen('智能通知')"
+          @click.stop="toggleDropdown('智能通知')"
+        >
           智能通知
           <span class="caret">▾</span>
         </button>
-        <div class="nav-dropdown">
+        <div class="nav-dropdown" v-show="isOpen('智能通知')">
           <router-link
             v-for="item in notificationItems"
             :key="item.label"
             class="nav-dropdown-item"
             :to="item.path"
+            @click.native="closeDropdown"
           >
             {{ item.label }}
           </router-link>
@@ -46,13 +58,22 @@
         <span class="user-role">{{ roleLabel }}</span>
       </div>
       <div class="nav-group">
-        <button class="nav-link nav-link-button" type="button">
+        <button
+          class="nav-link nav-link-button"
+          type="button"
+          :aria-expanded="isOpen('用户信息')"
+          @click.stop="toggleDropdown('用户信息')"
+        >
           用户信息
           <span class="caret">▾</span>
         </button>
-        <div class="nav-dropdown nav-dropdown-right">
-          <button class="nav-dropdown-item" type="button" @click="goProfile">个人中心</button>
-          <button class="nav-dropdown-item" type="button" @click="logout">退出登录</button>
+        <div class="nav-dropdown nav-dropdown-right" v-show="isOpen('用户信息')">
+          <button class="nav-dropdown-item" type="button" @click="handleProfile">
+            个人中心
+          </button>
+          <button class="nav-dropdown-item" type="button" @click="handleLogout">
+            退出登录
+          </button>
         </div>
       </div>
     </div>
@@ -66,7 +87,8 @@ export default {
     return {
       role: '',
       username: '',
-      realName: ''
+      realName: '',
+      openLabel: null
     }
   },
   computed: {
@@ -106,8 +128,7 @@ export default {
           { label: '报修', path: '/resident/repairs' },
           { label: '物业费', path: '/resident/property-fee' },
           { label: '停车位', path: '/resident/parking' },
-          { label: '访客登记', path: '/resident/visitor' },
-          { label: '服务预约', path: '/resident/repairs?tab=submit' }
+          { label: '访客登记', path: '/resident/visitor' }
         )
         neighborItems.push(
           { label: '邻里圈', path: '/resident/community' },
@@ -137,13 +158,32 @@ export default {
   },
   mounted() {
     this.refreshUser()
+    document.addEventListener('click', this.handleDocClick)
+  },
+  beforeUnmount() {
+    document.removeEventListener('click', this.handleDocClick)
   },
   watch: {
     $route() {
       this.refreshUser()
+      this.closeDropdown()
     }
   },
   methods: {
+    isOpen(key) {
+      return this.openLabel === key
+    },
+    toggleDropdown(key) {
+      this.openLabel = this.openLabel === key ? null : key
+    },
+    closeDropdown() {
+      this.openLabel = null
+    },
+    handleDocClick(event) {
+      if (this.$el && !this.$el.contains(event.target)) {
+        this.closeDropdown()
+      }
+    },
     refreshUser() {
       this.role = localStorage.getItem('role') || 'resident'
       this.username = localStorage.getItem('username') || ''
@@ -161,6 +201,10 @@ export default {
         this.$router.push('/resident/profile')
       }
     },
+    handleProfile() {
+      this.closeDropdown()
+      this.goProfile()
+    },
     logout() {
       localStorage.removeItem('token')
       localStorage.removeItem('username')
@@ -171,6 +215,10 @@ export default {
       localStorage.removeItem('address')
       localStorage.removeItem('idCard')
       this.$router.push('/login')
+    },
+    handleLogout() {
+      this.closeDropdown()
+      this.logout()
     }
   }
 }
