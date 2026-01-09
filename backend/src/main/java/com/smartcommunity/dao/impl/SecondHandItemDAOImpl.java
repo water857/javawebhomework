@@ -38,7 +38,8 @@ public class SecondHandItemDAOImpl implements SecondHandItemDAO {
     @Override
     public List<SecondHandItem> getItems(String status) {
         List<SecondHandItem> items = new ArrayList<>();
-        String baseSql = "SELECT id, user_id, title, description, price, status, create_time FROM second_hand_item";
+        String baseSql = "SELECT item.id, item.user_id, item.title, item.description, item.price, item.status, item.create_time, user.real_name AS publisher_name " +
+                "FROM second_hand_item item LEFT JOIN user ON item.user_id = user.id";
         String sql = status == null ? baseSql + " ORDER BY create_time DESC" : baseSql + " WHERE status = ? ORDER BY create_time DESC";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -58,7 +59,8 @@ public class SecondHandItemDAOImpl implements SecondHandItemDAO {
 
     @Override
     public SecondHandItem getItemById(int id) {
-        String sql = "SELECT id, user_id, title, description, price, status, create_time FROM second_hand_item WHERE id = ?";
+        String sql = "SELECT item.id, item.user_id, item.title, item.description, item.price, item.status, item.create_time, user.real_name AS publisher_name " +
+                "FROM second_hand_item item LEFT JOIN user ON item.user_id = user.id WHERE item.id = ?";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -96,6 +98,7 @@ public class SecondHandItemDAOImpl implements SecondHandItemDAO {
         item.setPrice(rs.getBigDecimal("price"));
         item.setStatus(rs.getString("status"));
         item.setCreateTime(rs.getTimestamp("create_time"));
+        item.setPublisherName(rs.getString("publisher_name"));
         return item;
     }
 }

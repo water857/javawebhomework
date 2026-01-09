@@ -2,9 +2,6 @@
   <div class="community-container">
     <div class="community-header">
     <div class="header-left">
-      <button @click="goHome" class="home-btn">
-        返回首页
-      </button>
       <h1>邻里圈</h1>
     </div>
     <div class="header-actions">
@@ -63,37 +60,7 @@
             <button @click="addTag" class="add-tag-btn">添加</button>
           </div>
           
-          <!-- 隐私设置 -->
-          <div class="privacy-setting">
-            <span class="icon">🔒</span>
-            <select v-model="newPost.privacy" class="privacy-select">
-              <option value="public">公开</option>
-              <option value="specified_users">指定用户可见</option>
-            </select>
-            
-            <!-- 指定用户选择 -->
-            <div v-if="newPost.privacy === 'specified_users'" class="user-selector">
-              <select v-model="selectedUserId" class="user-select">
-                <option value="">选择用户</option>
-                <option v-for="user in residents" :key="user.id" :value="user.id">
-                  {{ user.name }}
-                </option>
-              </select>
-              <button @click="addVisibleUser" class="add-user-btn">添加</button>
-              
-              <div v-if="newPost.visibleUserIds.length > 0" class="selected-users">
-                <span
-                  v-for="userId in newPost.visibleUserIds"
-                  :key="userId"
-                  class="selected-user"
-                >
-                  {{ getUserName(userId) }}
-                  <button @click="removeVisibleUser(userId)" class="remove-user">×</button>
-                </span>
-              </div>
-            </div>
-          </div>
-          
+          <!-- 隐私设置固定为公开 -->
           <button @click="publishPost" class="publish-btn">发布</button>
         </div>
       </div>
@@ -300,11 +267,9 @@ export default {
         content: '',
         privacy: 'public',
         images: [],
-        tagIds: [],
-        visibleUserIds: []
+        tagIds: []
       },
       selectedTagId: '',
-      selectedUserId: '',
       
       // 标签
       tags: [],
@@ -550,24 +515,6 @@ export default {
       }
     },
     
-    // 添加可见用户
-    addVisibleUser() {
-      if (this.selectedUserId && !this.newPost.visibleUserIds?.includes(parseInt(this.selectedUserId))) {
-        if (!this.newPost.visibleUserIds) {
-          this.newPost.visibleUserIds = []
-        }
-        this.newPost.visibleUserIds.push(parseInt(this.selectedUserId))
-        this.selectedUserId = ''
-      }
-    },
-    
-    // 移除可见用户
-    removeVisibleUser(userId) {
-      if (this.newPost.visibleUserIds) {
-        this.newPost.visibleUserIds = this.newPost.visibleUserIds.filter(id => id !== userId)
-      }
-    },
-    
     // 发布动态
     async publishPost() {
       if (!this.newPost.content.trim()) return
@@ -583,8 +530,7 @@ export default {
           content: '',
           privacy: 'public',
           images: [],
-          tagIds: [],
-          visibleUserIds: []
+          tagIds: []
         }
       } catch (error) {
         console.error('发布动态失败:', error)
@@ -858,9 +804,6 @@ export default {
     },
     
     // 返回首页
-    goHome() {
-      this.$router.push('/resident')
-    },
     
     // 获取隐私文本
     getPrivacyText(privacy) {
@@ -892,20 +835,6 @@ export default {
   display: flex;
   align-items: center;
   gap: 10px;
-}
-
-.home-btn {
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.home-btn:hover {
-  background-color: #45a049;
 }
 
 .community-header h1 {
@@ -1030,7 +959,7 @@ export default {
   flex-wrap: wrap;
 }
 
-.upload-btn, .tag-selector, .privacy-setting {
+.upload-btn, .tag-selector {
   display: flex;
   align-items: center;
   gap: 5px;
@@ -1044,7 +973,7 @@ export default {
   font-size: 16px;
 }
 
-.tag-select, .privacy-select, .user-select {
+.tag-select {
   border: 1px solid #ddd;
   border-radius: 4px;
   padding: 4px 8px;

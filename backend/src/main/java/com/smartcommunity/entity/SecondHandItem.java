@@ -11,6 +11,7 @@ public class SecondHandItem {
     private BigDecimal price;
     private String status;
     private Timestamp createTime;
+    private String publisherName;
 
     public int getId() {
         return id;
@@ -66,5 +67,13 @@ public class SecondHandItem {
 
     public void setCreateTime(Timestamp createTime) {
         this.createTime = createTime;
+    }
+
+    public String getPublisherName() {
+        return publisherName;
+    }
+
+    public void setPublisherName(String publisherName) {
+        this.publisherName = publisherName;
     }
 }

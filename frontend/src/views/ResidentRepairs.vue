@@ -237,6 +237,7 @@ export default {
   },
   mounted() {
     this.username = this.getLocalStorageItem('username')
+    this.applyTabFromRoute()
     this.fetchUserData()
     this.fetchRepairs()
     
@@ -246,6 +247,11 @@ export default {
     }, 30000)
   },
   methods: {
+    applyTabFromRoute() {
+      if (this.$route.query.tab === 'submit') {
+        this.activeTab = 'submit'
+      }
+    },
     // 安全获取localStorage项的辅助函数
     getLocalStorageItem(key) {
       if (typeof localStorage !== 'undefined') {

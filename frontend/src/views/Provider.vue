@@ -1,90 +1,148 @@
 <template>
-  <div class="container">
-    <header>
-      <h1>服务商中心</h1>
-      <div class="user-info">
-        <span>欢迎您，{{ username }}</span>
-        <button class="btn" @click="handleBack">返回首页</button>
-        <button class="btn" @click="handleProfile">个人中心</button>
-        <button class="btn" @click="handleLogout">退出登录</button>
+  <div class="page-container">
+    <div class="page-header">
+      <div>
+        <div class="page-title">服务商首页</div>
+        <div class="page-subtitle">查看公告与天气，快速进入服务任务。</div>
       </div>
-    </header>
-    
-    <div class="role-features">
-      <h2>服务商功能</h2>
-      <div class="features-grid">
-        <div class="feature-card">
-          <h3>任务管理</h3>
-          <p>查看和处理居民提交的服务订单</p>
-          <button class="btn" @click="handleServiceManagement('tasks')">查看任务</button>
-        </div>
-        <div class="feature-card">
-          <h3>服务记录</h3>
-          <p>查看历史服务记录和详情</p>
-          <button class="btn" @click="handleServiceManagement('records')">查看记录</button>
-        </div>
-        <div class="feature-card">
-          <h3>服务评价</h3>
-          <p>查看居民对服务的评价和反馈</p>
-          <button class="btn" @click="handleServiceManagement('evaluations')">查看评价</button>
-        </div>
-        <div class="feature-card">
-          <h3>收益统计</h3>
-          <p>查看服务收益和业务数据</p>
-          <button class="btn">查看统计</button>
-        </div>
-        <div class="feature-card">
-          <h3>社区活动</h3>
-          <p>查看和参与社区组织的各种活动</p>
-          <button class="btn" @click="handleActivities">查看活动</button>
-        </div>
+      <div class="page-actions">
+        <button class="btn btn-secondary" @click="refreshAll">刷新首页</button>
+        <button class="btn btn-primary" @click="goService">进入服务预约</button>
       </div>
+    </div>
+
+    <div class="card-grid">
+      <section class="section-card">
+        <div class="section-title">天气与温馨提示</div>
+        <div v-if="weatherTips" class="weather-block">
+          <pre>{{ weatherTips }}</pre>
+        </div>
+        <div v-else class="empty-state">正在获取天气信息...</div>
+      </section>
+
+      <section class="section-card">
+        <div class="section-title">社区公告</div>
+        <div v-if="announcements.length === 0" class="empty-state">暂无公告</div>
+        <div v-else class="announcement-list">
+          <div
+            v-for="item in announcements"
+            :key="item.id"
+            class="announcement-item"
+            @click="showAnnouncement(item)"
+          >
+            <div>
+              <div class="announcement-title">{{ item.title }}</div>
+              <div class="announcement-meta">{{ formatDate(item.publishedAt || item.createdAt) }}</div>
+            </div>
+            <span class="tag">详情</span>
+          </div>
+        </div>
+      </section>
     </div>
   </div>
 </template>
 
 <script>
+import { weatherApi, announcementApi } from '../services/api'
+
 export default {
   name: 'Provider',
   data() {
     return {
-      username: ''
+      weatherTips: '',
+      announcements: []
     }
   },
   mounted() {
-    // 从本地存储获取用户名
-    this.username = localStorage.getItem('username')
+    this.refreshAll()
   },
   methods: {
-    handleBack() {
-      this.$router.push('/provider')
+    async refreshAll() {
+      await Promise.all([this.getWeatherInfo(), this.getAnnouncements()])
     },
-    handleProfile() {
-      // 跳转到个人中心页面
-      this.$router.push('/provider/profile')
+    async getWeatherInfo() {
+      try {
+        const response = await weatherApi.getWeatherTips()
+        if (response && response.success) {
+          this.weatherTips = response.data
+        } else if (response && response.data) {
+          this.weatherTips = response.data
+        } else {
+          this.weatherTips = ''
+        }
+      } catch (error) {
+        console.error('获取天气信息失败:', error)
+        this.weatherTips = '今日天气：晴，温度：22℃\n风向：东南，风力：2级，湿度：45%\n温馨提示：今天天气宜人，适合户外活动。'
+      }
     },
-    handleServiceManagement(tab) {
-      // 跳转到服务管理界面，并根据参数显示相应标签页
-      this.$router.push({ path: '/provider/service-management', query: { tab } })
+    async getAnnouncements() {
+      try {
+        const response = await announcementApi.getLatestAnnouncements(5)
+        if (response.code === 'success') {
+          this.announcements = response.data || []
+        }
+      } catch (error) {
+        console.error('获取公告失败:', error)
+        this.announcements = []
+      }
     },
-    handleActivities() {
-      // 跳转到活动列表页面
-      this.$router.push('/provider/activities')
+    showAnnouncement(item) {
+      alert(`公告详情\n\n标题: ${item.title}\n\n内容: ${item.content}\n\n发布者: ${item.authorName || '管理员'}\n\n发布时间: ${this.formatDate(item.publishedAt || item.createdAt)}`)
     },
-    handleLogout() {
-      // 清除本地存储的token和用户信息
-      localStorage.removeItem('token')
-      localStorage.removeItem('username')
-      localStorage.removeItem('role')
-      localStorage.removeItem('realName')
-      localStorage.removeItem('phone')
-      localStorage.removeItem('email')
-      localStorage.removeItem('address')
-      localStorage.removeItem('idCard')
-      
-      // 跳转到登录页
-      this.$router.push('/login')
+    goService() {
+      this.$router.push('/provider/service-management')
+    },
+    formatDate(dateTime) {
+      if (!dateTime) return ''
+      if (typeof dateTime === 'string') return dateTime
+      const date = new Date(dateTime)
+      return date.toLocaleString('zh-CN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      })
     }
   }
 }
 </script>
+
+<style scoped>
+.weather-block pre {
+  white-space: pre-wrap;
+  font-family: inherit;
+  color: #1f2937;
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: 12px;
+}
+
+.announcement-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.announcement-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+}
+
+.announcement-title {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.announcement-meta {
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+</style>

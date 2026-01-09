@@ -1,151 +1,148 @@
 <template>
-  <div class="container">
-    <header>
-      <h1>物业管理员中心</h1>
-      <div class="user-info">
-        <span>欢迎您，{{ username }}</span>
-        <button class="btn" @click="handleBack">返回首页</button>
-        <button class="btn" @click="handleProfile">个人中心</button>
-        <button class="btn" @click="handleLogout">退出登录</button>
+  <div class="page-container">
+    <div class="page-header">
+      <div>
+        <div class="page-title">管理员首页</div>
+        <div class="page-subtitle">快速掌握社区最新动态与系统通知。</div>
       </div>
-    </header>
-    
-    <div class="role-features">
-        <h2>管理员功能</h2>
-        <div class="features-grid">
-          <div class="feature-card">
-            <h3>用户管理</h3>
-            <p>管理社区居民和服务商账户</p>
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-              <button class="btn" @click="handleUserManagement">管理居民</button>
-              <button class="btn" @click="handleProviderManagement">管理服务商</button>
+      <div class="page-actions">
+        <button class="btn btn-secondary" @click="refreshAll">刷新首页</button>
+        <button class="btn btn-primary" @click="goAnnouncements">公告管理</button>
+      </div>
+    </div>
+
+    <div class="card-grid">
+      <section class="section-card">
+        <div class="section-title">天气与温馨提示</div>
+        <div v-if="weatherTips" class="weather-block">
+          <pre>{{ weatherTips }}</pre>
+        </div>
+        <div v-else class="empty-state">正在获取天气信息...</div>
+      </section>
+
+      <section class="section-card">
+        <div class="section-title">社区公告</div>
+        <div v-if="announcements.length === 0" class="empty-state">暂无公告</div>
+        <div v-else class="announcement-list">
+          <div
+            v-for="item in announcements"
+            :key="item.id"
+            class="announcement-item"
+            @click="showAnnouncement(item)"
+          >
+            <div>
+              <div class="announcement-title">{{ item.title }}</div>
+              <div class="announcement-meta">{{ formatDate(item.publishedAt || item.createdAt) }}</div>
             </div>
-          </div>
-        <div class="feature-card">
-          <h3>报修处理</h3>
-          <p>处理居民提交的维修申请</p>
-          <button class="btn" @click="handleRepairManagement">查看报修</button>
-        </div>
-        <div class="feature-card">
-          <h3>活动管理</h3>
-          <p>发布和管理社区活动</p>
-          <div style="display: flex; gap: 10px; margin-top: 10px;">
-            <button class="btn" @click="handleActivities">查看活动</button>
-            <button class="btn" @click="handlePublishActivity">发布活动</button>
+            <span class="tag">详情</span>
           </div>
         </div>
-        <div class="feature-card">
-          <h3>公告发布</h3>
-          <p>发布社区通知和活动信息</p>
-          <div style="display: flex; gap: 10px; margin-top: 10px;">
-            <button class="btn" @click="handleAnnouncements">管理公告</button>
-            <button class="btn" @click="handlePublishAnnouncement">发布公告</button>
-          </div>
-        </div>
-        <div class="feature-card">
-          <h3>费用管理</h3>
-          <p>管理居民物业费和水电费账单</p>
-          <div style="display: flex; gap: 10px; margin-top: 10px;">
-            <button class="btn" @click="handlePropertyFeeManagement">账单管理</button>
-            <button class="btn" @click="handlePropertyFeeStatistics">统计分析</button>
-            <button class="btn" @click="handlePropertyFeeReconciliation">对账管理</button>
-          </div>
-        </div>
-        <div class="feature-card">
-          <h3>车位审批</h3>
-          <p>审核居民车位申请并释放车位</p>
-          <button class="btn" @click="handleParkingAdmin">进入审批</button>
-        </div>
-        <div class="feature-card">
-          <h3>访客记录</h3>
-          <p>查看全部访客登记信息</p>
-          <button class="btn" @click="handleVisitorAdmin">查看记录</button>
-        </div>
-      </div>
+      </section>
     </div>
   </div>
 </template>
 
 <script>
+import { weatherApi, announcementApi } from '../services/api'
+
 export default {
   name: 'Admin',
   data() {
     return {
-      username: ''
+      weatherTips: '',
+      announcements: []
     }
   },
   mounted() {
-    // 从本地存储获取用户名
-    this.username = localStorage.getItem('username')
+    this.refreshAll()
   },
   methods: {
-    handleBack() {
-      this.$router.push('/admin')
+    async refreshAll() {
+      await Promise.all([this.getWeatherInfo(), this.getAnnouncements()])
     },
-    handleProfile() {
-      // 跳转到个人中心页面
-      this.$router.push('/admin/profile')
+    async getWeatherInfo() {
+      try {
+        const response = await weatherApi.getWeatherTips()
+        if (response && response.success) {
+          this.weatherTips = response.data
+        } else if (response && response.data) {
+          this.weatherTips = response.data
+        } else {
+          this.weatherTips = ''
+        }
+      } catch (error) {
+        console.error('获取天气信息失败:', error)
+        this.weatherTips = '今日天气：晴，温度：22℃\n风向：东南，风力：2级，湿度：45%\n温馨提示：今天天气宜人，适合户外活动。'
+      }
     },
-    handleUserManagement() {
-      // 跳转到居民管理页面
-      this.$router.push('/admin/resident-management')
+    async getAnnouncements() {
+      try {
+        const response = await announcementApi.getLatestAnnouncements(5)
+        if (response.code === 'success') {
+          this.announcements = response.data || []
+        }
+      } catch (error) {
+        console.error('获取公告失败:', error)
+        this.announcements = []
+      }
     },
-    handleProviderManagement() {
-      // 跳转到服务商管理页面
-      this.$router.push('/admin/provider-management')
+    showAnnouncement(item) {
+      alert(`公告详情\n\n标题: ${item.title}\n\n内容: ${item.content}\n\n发布者: ${item.authorName || '管理员'}\n\n发布时间: ${this.formatDate(item.publishedAt || item.createdAt)}`)
     },
-    handleRepairManagement() {
-      // 跳转到报修管理页面
-      this.$router.push('/admin/repair-management')
-    },
-    handleActivities() {
-      // 跳转到活动管理页面
-      this.$router.push('/admin/activities')
-    },
-    handlePublishActivity() {
-      // 跳转到发布活动页面
-      this.$router.push('/admin/activities/publish')
-    },
-    handleAnnouncements() {
-      // 跳转到公告管理页面
+    goAnnouncements() {
       this.$router.push('/admin/announcements')
     },
-    handlePublishAnnouncement() {
-      // 跳转到发布公告页面
-      this.$router.push('/admin/announcements/publish')
-    },
-    handlePropertyFeeManagement() {
-      // 跳转到物业费账单管理页面
-      this.$router.push('/admin/property-fee-management')
-    },
-    handlePropertyFeeStatistics() {
-      // 跳转到物业费统计分析页面
-      this.$router.push('/admin/property-fee-statistics')
-    },
-    handlePropertyFeeReconciliation() {
-      // 跳转到物业费对账管理页面
-      this.$router.push('/admin/property-fee-reconciliation')
-    },
-    handleParkingAdmin() {
-      this.$router.push('/resident/parking-admin')
-    },
-    handleVisitorAdmin() {
-      this.$router.push('/resident/visitor-admin')
-    },
-    handleLogout() {
-      // 清除本地存储的token和用户信息
-      localStorage.removeItem('token')
-      localStorage.removeItem('username')
-      localStorage.removeItem('role')
-      localStorage.removeItem('realName')
-      localStorage.removeItem('phone')
-      localStorage.removeItem('email')
-      localStorage.removeItem('address')
-      localStorage.removeItem('idCard')
-      
-      // 跳转到登录页
-      this.$router.push('/login')
+    formatDate(dateTime) {
+      if (!dateTime) return ''
+      if (typeof dateTime === 'string') return dateTime
+      const date = new Date(dateTime)
+      return date.toLocaleString('zh-CN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      })
     }
   }
 }
 </script>
+
+<style scoped>
+.weather-block pre {
+  white-space: pre-wrap;
+  font-family: inherit;
+  color: #1f2937;
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: 12px;
+}
+
+.announcement-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.announcement-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+}
+
+.announcement-title {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.announcement-meta {
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+</style>
