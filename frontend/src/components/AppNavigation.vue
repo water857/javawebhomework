@@ -128,8 +128,7 @@ export default {
           { label: '报修', path: '/resident/repairs' },
           { label: '物业费', path: '/resident/property-fee' },
           { label: '停车位', path: '/resident/parking' },
-          { label: '访客登记', path: '/resident/visitor' },
-          { label: '服务预约', path: '/resident/repairs?tab=submit' }
+          { label: '访客登记', path: '/resident/visitor' }
         )
         neighborItems.push(
           { label: '邻里圈', path: '/resident/community' },
