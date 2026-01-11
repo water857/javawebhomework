@@ -13,7 +13,7 @@ public class PasswordUtil {
 
     private static final BCryptPasswordEncoder BCRYPT = new BCryptPasswordEncoder();
 
-    // Generate salt (for legacy SHA-256 format only)
+    // 生成盐值（仅用于旧版 SHA-256 格式）
     private static String generateSalt() {
         return RandomStringUtils.randomAlphanumeric(SALT_LENGTH);
     }
@@ -38,12 +38,12 @@ public class PasswordUtil {
     public static boolean verifyPassword(String password, String storedPassword) {
         if (storedPassword == null || storedPassword.isEmpty()) {return false;}
 
-        // BCrypt
+        // 使用 BCrypt
         if (storedPassword.startsWith("$2a$") || storedPassword.startsWith("$2b$") || storedPassword.startsWith("$2y$")) {
             return BCRYPT.matches(password, storedPassword);
         }
 
-        // Legacy salt:sha256
+        // 旧版 salt:sha256
         if (storedPassword.contains(":")) {
             String[] parts = storedPassword.split(":");
             if (parts.length != 2) {return false;}

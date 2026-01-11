@@ -459,7 +459,7 @@ public class AnnouncementServlet extends HttpServlet {
             this.data = data;
         }
 
-        // Getters and Setters
+        // 访问器与设置器方法
         public String getCode() {
             return code;
         }
@@ -492,7 +492,7 @@ public class AnnouncementServlet extends HttpServlet {
         private String action;
         private Integer status;
 
-        // Getters and Setters
+        // 访问器与设置器方法
         public String getTitle() {
             return title;
         }
@@ -530,7 +530,7 @@ public class AnnouncementServlet extends HttpServlet {
     private static class StatusUpdateRequest {
         private Integer status;
 
-        // Getters and Setters
+        // 访问器与设置器方法
         public Integer getStatus() {
             return status;
         }
