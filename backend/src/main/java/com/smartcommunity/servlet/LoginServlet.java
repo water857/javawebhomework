@@ -24,7 +24,7 @@ public class LoginServlet extends HttpServlet {
         PrintWriter out = resp.getWriter();
 
         try {
-            // Read request body
+            // 读取请求体
             StringBuilder sb = new StringBuilder();
             BufferedReader reader = req.getReader();
             String line;
@@ -32,10 +32,10 @@ public class LoginServlet extends HttpServlet {
                 sb.append(line);
             }
 
-            // Parse JSON to LoginRequest object
+            // 解析 JSON 为 LoginRequest 对象
             LoginRequest loginRequest = gson.fromJson(sb.toString(), LoginRequest.class);
 
-            // Validate required fields
+            // 校验必填字段
             if (loginRequest == null || loginRequest.getUsername() == null || loginRequest.getUsername().isEmpty()
                     || loginRequest.getPassword() == null || loginRequest.getPassword().isEmpty()) {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -43,13 +43,13 @@ public class LoginServlet extends HttpServlet {
                 return;
             }
 
-            // Login user
+            // 用户登录
             User user = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
 
-            // Generate JWT token
+            // 生成 JWT 令牌
             String token = JwtUtil.generateToken(user.getUsername(), user.getRole());
 
-            // Prepare response data
+            // 准备响应数据
             UserResponse userResponse = new UserResponse();
             userResponse.setId(user.getId());
             userResponse.setUsername(user.getUsername());
@@ -75,7 +75,7 @@ public class LoginServlet extends HttpServlet {
         }
     }
 
-    // Request and Response classes
+    // 请求与响应类
     private static class LoginRequest {
         private String username;
         private String password;
@@ -105,7 +105,7 @@ public class LoginServlet extends HttpServlet {
         private String email;
         private String role;
 
-        // Getters and Setters
+        // 访问器与设置器方法
         public int getId() {
             return id;
         }

@@ -12,34 +12,34 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int register(User user) {
-        // Check if username already exists
+        // 检查用户名是否已存在
         if (existsByUsername(user.getUsername())) {
             throw new RuntimeException("Username already exists");
         }
 
-        // Check if phone already exists
+        // 检查手机号是否已存在
         if (user.getPhone() != null && !user.getPhone().isEmpty() && existsByPhone(user.getPhone())) {
             throw new RuntimeException("Phone number already exists");
         }
 
-        // Check if email already exists
+        // 检查邮箱是否已存在
         if (user.getEmail() != null && !user.getEmail().isEmpty() && existsByEmail(user.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
 
-        // Hash password
+        // 密码哈希处理
         user.setPassword(PasswordUtil.hashPassword(user.getPassword()));
 
-        // Set default status
+        // 设置默认状态
         user.setStatus(1);
 
-        // Add user to database
+        // 将用户写入数据库
         return userDAO.addUser(user);
     }
 
     @Override
     public User login(String username, String password) {
-        // Get user by username
+        // 根据用户名获取用户
         System.out.println("Login attempt for username: " + username);
         User user = userDAO.getUserByUsername(username);
         if (user == null) {
@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
         System.out.println("Stored password: " + user.getPassword());
         System.out.println("Input password: " + password);
         
-        // Check password
+        // 校验密码
         boolean passwordMatch = PasswordUtil.verifyPassword(password, user.getPassword());
         System.out.println("Password match: " + passwordMatch);
         
@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Invalid username or password");
         }
 
-        // Check user status
+        // 校验用户状态
         if (user.getStatus() == 0) {
             System.out.println("User account is disabled: " + username);
             throw new RuntimeException("User account is disabled");
@@ -101,20 +101,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int updateUser(User user) {
-        // Get existing user to preserve unchanged fields
+        // 获取现有用户以保留未变更字段
         User existingUser = userDAO.getUserByUsername(user.getUsername());
         if (existingUser == null) {
             throw new RuntimeException("User not found");
         }
 
-        // Only update fields that are not null or empty
+        // 仅更新非空字段
         if (user.getRealName() == null || user.getRealName().isEmpty()) {
             user.setRealName(existingUser.getRealName());
         }
         if (user.getPhone() == null || user.getPhone().isEmpty()) {
             user.setPhone(existingUser.getPhone());
         } else if (!user.getPhone().equals(existingUser.getPhone())) {
-            // Check if phone already exists for other user (exclude current user)
+            // 检查手机号是否被其他用户占用（排除当前用户）
             if (existsByPhone(user.getPhone(), existingUser.getId())) {
                 throw new RuntimeException("Phone number already exists");
             }
@@ -122,7 +122,7 @@ public class UserServiceImpl implements UserService {
         if (user.getEmail() == null || user.getEmail().isEmpty()) {
             user.setEmail(existingUser.getEmail());
         } else if (!user.getEmail().equals(existingUser.getEmail())) {
-            // Check if email already exists for other user (exclude current user)
+            // 检查邮箱是否被其他用户占用（排除当前用户）
             if (existsByEmail(user.getEmail(), existingUser.getId())) {
                 throw new RuntimeException("Email already exists");
             }
@@ -134,8 +134,8 @@ public class UserServiceImpl implements UserService {
             user.setIdCard(existingUser.getIdCard());
         }
 
-        // Preserve other important fields
-        // Only preserve password if not explicitly set in the user object
+        // 保留其他重要字段
+        // 仅在用户对象未显式设置密码时保留原密码
         if (user.getPassword() == null) {
             user.setPassword(existingUser.getPassword());
         }
@@ -143,26 +143,26 @@ public class UserServiceImpl implements UserService {
         user.setStatus(existingUser.getStatus());
         user.setId(existingUser.getId());
 
-        // Update user in database
+        // 更新数据库中的用户
         return userDAO.updateUser(user);
     }
 
     @Override
     public boolean changePassword(String username, String oldPassword, String newPassword) {
-        // Get user by username
+        // 根据用户名获取用户
         User user = userDAO.getUserByUsername(username);
         if (user == null) {
             throw new RuntimeException("User not found");
         }
 
-        // Verify old password
+        // 校验旧密码
         if (!PasswordUtil.verifyPassword(oldPassword, user.getPassword())) {
             throw new RuntimeException("Old password is incorrect");
         }
 
-        // Hash new password and update
+        // 对新密码进行哈希并更新
         user.setPassword(PasswordUtil.hashPassword(newPassword));
-        // Directly update user without calling updateUser method to avoid password override
+        // 直接更新用户，避免调用 updateUser 导致密码被覆盖
         int result = userDAO.updateUser(user);
 
         return result > 0;
@@ -180,28 +180,28 @@ public class UserServiceImpl implements UserService {
     
     @Override
     public int addUser(User user) {
-        // Check if username already exists
+        // 检查用户名是否已存在
         if (existsByUsername(user.getUsername())) {
             throw new RuntimeException("Username already exists");
         }
 
-        // Check if phone already exists
+        // 检查手机号是否已存在
         if (user.getPhone() != null && !user.getPhone().isEmpty() && existsByPhone(user.getPhone())) {
             throw new RuntimeException("Phone number already exists");
         }
 
-        // Check if email already exists
+        // 检查邮箱是否已存在
         if (user.getEmail() != null && !user.getEmail().isEmpty() && existsByEmail(user.getEmail())) {
             throw new RuntimeException("Email already exists");
         }
 
-        // Hash password
+        // 密码哈希处理
         user.setPassword(PasswordUtil.hashPassword(user.getPassword()));
 
-        // Set default status
+        // 设置默认状态
         user.setStatus(1);
 
-        // Add user to database
+        // 将用户写入数据库
         return userDAO.addUser(user);
     }
     

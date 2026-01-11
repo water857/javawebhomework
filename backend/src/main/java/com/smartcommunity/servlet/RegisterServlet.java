@@ -23,7 +23,7 @@ public class RegisterServlet extends HttpServlet {
         PrintWriter out = resp.getWriter();
 
         try {
-            // Read request body
+            // 读取请求体
             StringBuilder sb = new StringBuilder();
             BufferedReader reader = req.getReader();
             String line;
@@ -31,10 +31,10 @@ public class RegisterServlet extends HttpServlet {
                 sb.append(line);
             }
 
-            // Parse JSON to User object
+            // 解析 JSON 为 User 对象
             User user = gson.fromJson(sb.toString(), User.class);
 
-            // Validate required fields
+            // 校验必填字段
             if (user == null || user.getUsername() == null || user.getUsername().isEmpty()
                     || user.getPassword() == null || user.getPassword().isEmpty()
                     || user.getRole() == null || user.getRole().isEmpty()) {
@@ -43,14 +43,14 @@ public class RegisterServlet extends HttpServlet {
                 return;
             }
 
-            // Validate role
+            // 校验角色
             if (!user.getRole().equals("resident") && !user.getRole().equals("property_admin") && !user.getRole().equals("service_provider")) {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 out.write(gson.toJson(new Response("error", "Invalid role")));
                 return;
             }
 
-            // Register user
+            // 注册用户
             int userId = userService.register(user);
             if (userId > 0) {
                 resp.setStatus(HttpServletResponse.SC_OK);
@@ -72,7 +72,7 @@ public class RegisterServlet extends HttpServlet {
         }
     }
 
-    // Response class for JSON output
+    // JSON 输出响应类
     private static class Response {
         private String code;
         private String message;
