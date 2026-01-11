@@ -557,7 +557,7 @@ public class ActivityServlet extends HttpServlet {
             this.data = data;
         }
 
-        // Getters and Setters
+        // 访问器与设置器方法
         public String getCode() {
             return code;
         }
@@ -605,7 +605,7 @@ public class ActivityServlet extends HttpServlet {
         private String evaluation;
         private int rating;
 
-        // Getters and Setters
+        // 访问器与设置器方法
         public String getEvaluation() {
             return evaluation;
         }
@@ -626,7 +626,7 @@ public class ActivityServlet extends HttpServlet {
     private static class ImageUploadRequest {
         private String imageUrl;
 
-        // Getters and Setters
+        // 访问器与设置器方法
         public String getImageUrl() {
             return imageUrl;
         }
@@ -639,7 +639,7 @@ public class ActivityServlet extends HttpServlet {
     private static class StatusUpdateRequest {
         private String status;
 
-        // Getters and Setters
+        // 访问器与设置器方法
         public String getStatus() {
             return status;
         }

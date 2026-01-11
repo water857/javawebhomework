@@ -15,7 +15,7 @@ public class PropertyFeePayment {
     private Date createdAt;
     private Date updatedAt;
 
-    // Getters and Setters
+    // 访问器与设置器方法
     public int getId() {
         return id;
     }

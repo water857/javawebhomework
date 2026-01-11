@@ -29,7 +29,7 @@ public class JwtUtil {
         }
     }
 
-    // Generate JWT token
+    // 生成 JWT 令牌
     public static String generateToken(String username, String role) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + expiration);
@@ -45,27 +45,27 @@ public class JwtUtil {
                 .compact();
     }
 
-    // Validate JWT token and return error type if invalid
+    // 校验 JWT 令牌并在无效时返回错误类型
     public static String validateToken(String token) {
         try {
             Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
-            return null; // No error, token is valid
+            return null; // 无错误，令牌有效
         } catch (ExpiredJwtException e) {
-            return "Token expired"; // Token has expired
+            return "Token expired"; // 令牌已过期
         } catch (MalformedJwtException e) {
-            return "Malformed token"; // Token format is invalid
+            return "Malformed token"; // 令牌格式不正确
         } catch (SignatureException e) {
-            return "Invalid signature"; // Token signature is invalid
+            return "Invalid signature"; // 令牌签名无效
         } catch (UnsupportedJwtException e) {
-            return "Unsupported token"; // Token type is not supported
+            return "Unsupported token"; // 不支持的令牌类型
         } catch (IllegalArgumentException e) {
-            return "Token is empty or contains only whitespace"; // Token is empty
+            return "Token is empty or contains only whitespace"; // 令牌为空或仅包含空白字符
         } catch (Exception e) {
-            return "Invalid token"; // Other unspecified errors
+            return "Invalid token"; // 其他未知错误
         }
     }
 
-    // Get claims from token
+    // 从令牌中获取声明
     public static Claims getClaimsFromToken(String token) {
         try {
             return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
@@ -74,17 +74,17 @@ public class JwtUtil {
         }
     }
 
-    // Get username from token
+    // 从令牌中获取用户名
     public static String getUsernameFromToken(String token) {
         return getClaimsFromToken(token).getSubject();
     }
 
-    // Get role from token
+    // 从令牌中获取角色
     public static String getRoleFromToken(String token) {
         return (String) getClaimsFromToken(token).get("role");
     }
 
-    // Check if token is expired
+    // 检查令牌是否过期
     public static boolean isTokenExpired(String token) {
         return getClaimsFromToken(token).getExpiration().before(new Date());
     }

@@ -15,7 +15,7 @@ import java.util.Map;
 public class JwtAuthFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        // Initialization if needed
+        // 如有需要进行初始化
     }
 
     @Override
@@ -23,72 +23,72 @@ public class JwtAuthFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-        // Allow OPTIONS method for CORS preflight requests
+        // 允许 CORS 预检请求的 OPTIONS 方法
         if (httpRequest.getMethod().equals("OPTIONS")) {
             httpResponse.setStatus(HttpServletResponse.SC_OK);
             return;
         }
 
-        // Get request URI
+        // 获取请求 URI
         String requestURI = httpRequest.getRequestURI();
         
-        // Allow login, register, and root API path without authentication
+        // 允许登录、注册以及根 API 路径无需认证访问
         if (requestURI.contains("/api/login") || requestURI.contains("/api/register") || 
             (requestURI.endsWith("/api") || requestURI.matches(".*?/api$"))) {
             chain.doFilter(request, response);
             return;
         }
         
-        // Check if this is a GET request to activities or community API
+        // 检查是否为活动或社区 API 的 GET 请求
         boolean isPublicGetRequest = (requestURI.contains("/api/activities") || requestURI.contains("/api/community")) && httpRequest.getMethod().equals("GET");
         
-        // Get authorization header
+        // 获取认证请求头
         String authHeader = httpRequest.getHeader("Authorization");
         
-        // If it's not a public GET request, require authentication
+        // 非公开 GET 请求需要认证
         if (!isPublicGetRequest) {
-            // Check if header is present and starts with "Bearer "
+            // 检查请求头是否存在且以 "Bearer " 开头
             if (authHeader == null || authHeader.trim().isEmpty() || !authHeader.startsWith("Bearer ")) {
                 sendJsonResponse(httpResponse, HttpServletResponse.SC_UNAUTHORIZED, "Missing or invalid authorization header");
                 return;
             }
         }
         
-        // If authorization header is present, validate token and set user information
+        // 若存在认证请求头则校验令牌并设置用户信息
         if (authHeader != null && authHeader.trim().length() > 7 && authHeader.startsWith("Bearer ")) {
-            // Extract token
+            // 提取令牌
             String token = authHeader.substring(7);
             
-            // Validate token
+            // 校验令牌
             String tokenValidationResult = JwtUtil.validateToken(token);
             if (tokenValidationResult == null) {
-                // Get claims from token
+                // 从令牌中获取声明
                 Claims claims = JwtUtil.getClaimsFromToken(token);
                 String username = claims.getSubject();
                 String role = (String) claims.get("role");
                 
-                // Set user information in request attributes
+                // 在请求属性中设置用户信息
                 httpRequest.setAttribute("username", username);
                 httpRequest.setAttribute("role", role);
                 
-                // Continue filter chain
+                // 继续过滤链
                 chain.doFilter(request, response);
             } else {
-                // Invalid token
+                // 令牌无效
                 sendJsonResponse(httpResponse, HttpServletResponse.SC_UNAUTHORIZED, "Invalid or expired token: " + tokenValidationResult);
             }
         } else {
-            // Missing or invalid authorization header for protected request
+            // 受保护请求缺少或无效的认证请求头
             if (!isPublicGetRequest) {
                 sendJsonResponse(httpResponse, HttpServletResponse.SC_UNAUTHORIZED, "Missing or invalid authorization header");
             } else {
-                // Continue for public GET requests
+                // 公共 GET 请求直接放行
                 chain.doFilter(request, response);
             }
         }
     }
 
-    // Send JSON response
+    // 发送 JSON 响应
     private void sendJsonResponse(HttpServletResponse response, int statusCode, String message) throws IOException {
         response.setStatus(statusCode);
         response.setContentType("application/json");
@@ -108,6 +108,6 @@ public class JwtAuthFilter implements Filter {
     
     @Override
     public void destroy() {
-        // Cleanup resources if needed
+        // 如有需要清理资源
     }
 }

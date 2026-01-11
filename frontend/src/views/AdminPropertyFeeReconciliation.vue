@@ -772,7 +772,7 @@ h3 {
   gap: 10px;
 }
 
-/* Modal Styles */
+/* 模态框样式 */
 .modal {
   position: fixed;
   z-index: 1000;
