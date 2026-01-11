@@ -9,7 +9,7 @@ public class ActivityImage {
     private String imageUrl;
     private Timestamp createdAt;
 
-    // Getters and Setters
+    // 访问器与设置器方法
     public Integer getId() {
         return id;
     }

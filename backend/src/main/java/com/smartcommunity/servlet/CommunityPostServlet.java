@@ -51,12 +51,12 @@ import java.util.UUID;
         PrintWriter out = resp.getWriter();
 
         try {
-            // Get request URI
+            // 获取请求 URI
             String requestURI = req.getRequestURI();
             String contextPath = req.getContextPath();
             String relativeURI = requestURI.substring(contextPath.length());
 
-            // Get user information from JWT filter
+            // 从 JWT 过滤器获取用户信息
             String username = (String) req.getAttribute("username");
             User currentUser = null;
             if (username != null) {
@@ -233,17 +233,17 @@ import java.util.UUID;
         PrintWriter out = resp.getWriter();
 
         try {
-            // Get user information from JWT filter
+            // 从 JWT 过滤器获取用户信息
             String username = (String) req.getAttribute("username");
             User currentUser = userService.getUserByUsername(username);
 
-            // Get request URI
+            // 获取请求 URI
             String requestURI = req.getRequestURI();
             String contextPath = req.getContextPath();
             String relativeURI = requestURI.substring(contextPath.length());
             StringBuilder sb = new StringBuilder();
 
-            // Handle image upload - this must be checked first before reading request body
+            // 处理图片上传 - 必须在读取请求体之前先检查
             if (relativeURI.equals("/api/community/upload")) {
                 try {
                     Part filePart = req.getPart("image");
@@ -253,7 +253,7 @@ import java.util.UUID;
                         return;
                     }
 
-                    // Generate unique filename with safe characters only
+                    // 生成仅包含安全字符的唯一文件名
                     String originalFileName = getFileName(filePart);
                     // 使用UUID生成唯一前缀，避免文件名冲突，同时保留文件扩展名
                     String extension = "";
@@ -263,14 +263,14 @@ import java.util.UUID;
                     }
                     String fileName = UUID.randomUUID().toString() + extension;
 
-                    // Define upload directory
+                    // 定义上传目录
                     String uploadDir = getServletContext().getRealPath("/uploads");
                     File directory = new File(uploadDir);
                     if (!directory.exists()) {
                         directory.mkdirs();
                     }
 
-                    // Save file
+                    // 保存文件
                     String filePath = uploadDir + File.separator + fileName;
                     try (InputStream input = filePart.getInputStream();
                          OutputStream output = new FileOutputStream(filePath)) {
@@ -281,7 +281,7 @@ import java.util.UUID;
                         }
                     }
 
-                    // Return image URL with frontend proxy path - no need for encoding since we're using UUID
+                    // 返回带前端代理路径的图片 URL，使用 UUID 无需编码
                     String imageUrl = "/uploads/" + fileName;
                     resp.setStatus(HttpServletResponse.SC_OK);
                     out.write(gson.toJson(new Response("success", "Image uploaded successfully", imageUrl)));
@@ -293,7 +293,7 @@ import java.util.UUID;
                     return;
                 }
             } else {
-                // Read request body for non-multipart requests
+                // 读取非 multipart 请求体
                 BufferedReader reader = req.getReader();
                 String line;
                 while ((line = reader.readLine()) != null) {
@@ -409,11 +409,11 @@ import java.util.UUID;
         PrintWriter out = resp.getWriter();
 
         try {
-            // Get user information from JWT filter
+            // 从 JWT 过滤器获取用户信息
             String username = (String) req.getAttribute("username");
             User currentUser = userService.getUserByUsername(username);
 
-            // Read request body
+            // 读取请求体
             BufferedReader reader = req.getReader();
             StringBuilder sb = new StringBuilder();
             String line;
@@ -422,7 +422,7 @@ import java.util.UUID;
             }
             reader.close();
 
-            // Get request URI
+            // 获取请求 URI
             String requestURI = req.getRequestURI();
             String contextPath = req.getContextPath();
             String relativeURI = requestURI.substring(contextPath.length());
@@ -521,7 +521,7 @@ import java.util.UUID;
             this.data = data;
         }
 
-        // Getters and setters
+        // 访问器与设置器方法
         public String getCode() { return code; }
         public void setCode(String code) { this.code = code; }
         public String getMessage() { return message; }
@@ -537,7 +537,7 @@ import java.util.UUID;
         private List<Integer> tagIds;
         private List<Integer> visibleUserIds;
 
-        // Getters and setters
+        // 访问器与设置器方法
         public String getContent() { return content; }
         public void setContent(String content) { this.content = content; }
         public String getPrivacy() { return privacy; }
@@ -554,7 +554,7 @@ import java.util.UUID;
         private String content;
         private Integer parentCommentId;
 
-        // Getters and setters
+        // 访问器与设置器方法
         public String getContent() { return content; }
         public void setContent(String content) { this.content = content; }
         public Integer getParentCommentId() { return parentCommentId; }
@@ -564,7 +564,7 @@ import java.util.UUID;
     private static class PrivacyRequest {
         private String privacy;
 
-        // Getters and setters
+        // 访问器与设置器方法
         public String getPrivacy() { return privacy; }
         public void setPrivacy(String privacy) { this.privacy = privacy; }
     }
@@ -572,7 +572,7 @@ import java.util.UUID;
     private static class VisibleUsersRequest {
         private List<Integer> visibleUserIds;
 
-        // Getters and setters
+        // 访问器与设置器方法
         public List<Integer> getVisibleUserIds() { return visibleUserIds; }
         public void setVisibleUserIds(List<Integer> visibleUserIds) { this.visibleUserIds = visibleUserIds; }
     }
