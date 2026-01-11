@@ -13,7 +13,7 @@ public class RepairEvaluation {
     private User resident;
     private User serviceProvider;
 
-    // Getters and Setters
+    // 访问器与设置器方法
     public int getId() {
         return id;
     }

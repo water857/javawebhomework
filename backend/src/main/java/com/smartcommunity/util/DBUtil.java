@@ -18,7 +18,7 @@ public class DBUtil {
             dataSource.setUsername(props.getProperty("jdbc.username"));
             dataSource.setPassword(props.getProperty("jdbc.password"));
             
-            // Connection pool configuration
+            // 连接池配置
             dataSource.setInitialSize(Integer.parseInt(props.getProperty("jdbc.initialSize")));
             dataSource.setMaxTotal(Integer.parseInt(props.getProperty("jdbc.maxActive")));
             dataSource.setMaxIdle(Integer.parseInt(props.getProperty("jdbc.maxIdle")));

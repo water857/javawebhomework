@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-// API服务配置
+// 接口服务配置
 const apiClient = axios.create({
   baseURL: '/api'
 });
@@ -13,7 +13,7 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-// 用户相关API
+// 用户相关接口
 export const userApi = {
   // 获取用户信息
   getUserInfo() {
@@ -36,7 +36,7 @@ export const userApi = {
   }
 };
 
-// 处理API响应
+// 处理接口响应
 function handleResponse(response) {
   const responseData = response.data;
   // 检查响应是否包含code或status字段，如果是，说明是标准响应格式
@@ -50,7 +50,7 @@ function handleResponse(response) {
   return responseData;
 }
 
-// API请求函数
+// 接口请求函数
 export async function apiRequest(endpoint, method = 'GET', data = null) {
   try {
     const response = await apiClient.request({
@@ -65,7 +65,7 @@ export async function apiRequest(endpoint, method = 'GET', data = null) {
   }
 }
 
-// 活动相关API
+// 活动相关接口
 export const activityApi = {
   // 获取活动列表
   getActivities(page = 1, pageSize = 10, searchQuery = '', statusFilter = '') {

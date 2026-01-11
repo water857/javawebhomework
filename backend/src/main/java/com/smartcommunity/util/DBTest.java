@@ -10,11 +10,11 @@ public class DBTest {
         System.out.println("Testing database connection and queries...");
         
         try {
-            // Test database connection
+            // 测试数据库连接
             Connection conn = DBUtil.getConnection();
             System.out.println("✓ Database connection established");
             
-            // Test property_fee_bill count
+            // 测试 property_fee_bill 数量
             String billCountSql = "SELECT COUNT(*) FROM property_fee_bill";
             PreparedStatement billCountStmt = conn.prepareStatement(billCountSql);
             ResultSet billCountRs = billCountStmt.executeQuery();
@@ -25,7 +25,7 @@ public class DBTest {
             billCountStmt.close();
             billCountRs.close();
             
-            // Test user count with role=resident
+            // 测试角色为 resident 的用户数量
             String userCountSql = "SELECT COUNT(*) FROM user WHERE role = 'resident'";
             PreparedStatement userCountStmt = conn.prepareStatement(userCountSql);
             ResultSet userCountRs = userCountStmt.executeQuery();
@@ -36,7 +36,7 @@ public class DBTest {
             userCountStmt.close();
             userCountRs.close();
             
-            // Test property_fee_payment count
+            // 测试 property_fee_payment 数量
             String paymentCountSql = "SELECT COUNT(*) FROM property_fee_payment";
             PreparedStatement paymentCountStmt = conn.prepareStatement(paymentCountSql);
             ResultSet paymentCountRs = paymentCountStmt.executeQuery();
@@ -47,7 +47,7 @@ public class DBTest {
             paymentCountStmt.close();
             paymentCountRs.close();
             
-            // Test bill statistics query
+            // 测试账单统计查询
             String billStatsSql = "SELECT COUNT(*) as total_bills, SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) as paid_amount, SUM(CASE WHEN status != 'paid' THEN amount ELSE 0 END) as unpaid_amount, COUNT(CASE WHEN status = 'paid' THEN 1 END) as paid_count, COUNT(CASE WHEN status = 'overdue' THEN 1 END) as overdue_count, COUNT(CASE WHEN status = 'unpaid' THEN 1 END) as unpaid_count, COUNT(CASE WHEN status = 'partially_paid' THEN 1 END) as partially_paid_count FROM property_fee_bill";
             PreparedStatement billStatsStmt = conn.prepareStatement(billStatsSql);
             ResultSet billStatsRs = billStatsStmt.executeQuery();
@@ -64,7 +64,7 @@ public class DBTest {
             billStatsStmt.close();
             billStatsRs.close();
             
-            // Test payment statistics query
+            // 测试支付统计查询
             String paymentStatsSql = "SELECT COUNT(*) as total_payments, SUM(amount) as total_amount, COUNT(CASE WHEN status = 'success' THEN 1 END) as successful_count, SUM(CASE WHEN status = 'success' THEN amount ELSE 0 END) as successful_amount, COUNT(CASE WHEN status = 'failed' THEN 1 END) as failed_count FROM property_fee_payment";
             PreparedStatement paymentStatsStmt = conn.prepareStatement(paymentStatsSql);
             ResultSet paymentStatsRs = paymentStatsStmt.executeQuery();
@@ -79,7 +79,7 @@ public class DBTest {
             paymentStatsStmt.close();
             paymentStatsRs.close();
             
-            // Close connection
+            // 关闭连接
             DBUtil.closeConnection(conn);
             System.out.println("✓ Database connection closed");
             

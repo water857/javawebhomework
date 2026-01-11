@@ -209,7 +209,7 @@ public class UserDAOImpl implements UserDAO {
         StringBuilder sql = new StringBuilder("SELECT * FROM user WHERE role = 'resident'");
         List<Object> params = new ArrayList<>();
         
-        // Add search keyword condition
+        // 添加搜索关键字条件
         if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {
             sql.append(" AND (username LIKE ? OR real_name LIKE ? OR phone LIKE ? OR email LIKE ?)");
             String keyword = "%" + searchKeyword.trim() + "%";
@@ -219,7 +219,7 @@ public class UserDAOImpl implements UserDAO {
             params.add(keyword);
         }
         
-        // Add status condition
+        // 添加状态条件
         if (status != null) {
             sql.append(" AND status = ?");
             params.add(status);
@@ -234,7 +234,7 @@ public class UserDAOImpl implements UserDAO {
             conn = DBUtil.getConnection();
             pstmt = conn.prepareStatement(sql.toString());
             
-            // Set parameters
+            // 设置参数
             for (int i = 0; i < params.size(); i++) {
                 if (params.get(i) instanceof String) {
                     pstmt.setString(i + 1, (String) params.get(i));
@@ -298,7 +298,7 @@ public class UserDAOImpl implements UserDAO {
         StringBuilder sql = new StringBuilder("SELECT * FROM user WHERE role = 'service_provider'");
         List<Object> params = new ArrayList<>();
         
-        // Add search keyword condition
+        // 添加搜索关键字条件
         if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {
             sql.append(" AND (username LIKE ? OR real_name LIKE ? OR phone LIKE ? OR email LIKE ?)");
             String keyword = "%" + searchKeyword.trim() + "%";
@@ -308,7 +308,7 @@ public class UserDAOImpl implements UserDAO {
             params.add(keyword);
         }
         
-        // Add status condition
+        // 添加状态条件
         if (status != null) {
             sql.append(" AND status = ?");
             params.add(status);
@@ -323,7 +323,7 @@ public class UserDAOImpl implements UserDAO {
             conn = DBUtil.getConnection();
             pstmt = conn.prepareStatement(sql.toString());
             
-            // Set parameters
+            // 设置参数
             for (int i = 0; i < params.size(); i++) {
                 if (params.get(i) instanceof String) {
                     pstmt.setString(i + 1, (String) params.get(i));
