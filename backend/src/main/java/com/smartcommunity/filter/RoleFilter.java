@@ -12,15 +12,15 @@ import java.util.Map;
 import java.util.Set;
 
 public class RoleFilter implements Filter {
-    // Role-based access control configuration
+    // 角色权限控制配置
     private Map<String, Set<String>> roleAccessMap;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        // Initialize role access configuration
+        // 初始化角色访问配置
         roleAccessMap = new HashMap<>();
 
-        // Resident can access these endpoints
+        // 住户可访问这些接口
         roleAccessMap.put("/api/user", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN, RoleConstants.SERVICE_PROVIDER));
         roleAccessMap.put("/api/profile/update", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN, RoleConstants.SERVICE_PROVIDER));
         roleAccessMap.put("/api/profile/update-idcard", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN, RoleConstants.SERVICE_PROVIDER));
@@ -39,7 +39,7 @@ public class RoleFilter implements Filter {
         roleAccessMap.put("/api/message", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN, RoleConstants.SERVICE_PROVIDER));
         roleAccessMap.put("/api/message/", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN, RoleConstants.SERVICE_PROVIDER));
 
-        // Property admin can access these endpoints
+        // 物业管理员可访问这些接口
         roleAccessMap.put("/api/residents", Set.of(RoleConstants.PROPERTY_ADMIN));
         roleAccessMap.put("/api/residents/", Set.of(RoleConstants.PROPERTY_ADMIN));
         roleAccessMap.put("/api/providers", Set.of(RoleConstants.PROPERTY_ADMIN));
@@ -51,7 +51,7 @@ public class RoleFilter implements Filter {
         roleAccessMap.put("/api/visitor/manage", Set.of(RoleConstants.PROPERTY_ADMIN));
         roleAccessMap.put("/api/system/monitor", Set.of(RoleConstants.PROPERTY_ADMIN));
 
-        // Activity related endpoints - accessible to residents, property admins, and service providers
+        // 活动相关接口（住户与物业管理员可访问）
         roleAccessMap.put("/api/activities", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN));
         roleAccessMap.put("/api/activities/", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN));
         roleAccessMap.put("/api/activities/register", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN));
@@ -64,11 +64,11 @@ public class RoleFilter implements Filter {
         roleAccessMap.put("/api/activities/participants", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN));
         roleAccessMap.put("/api/activities/review", Set.of(RoleConstants.PROPERTY_ADMIN));
 
-        // Service provider can access these endpoints
+        // 服务商可访问这些接口
         roleAccessMap.put("/api/service/tasks", Set.of(RoleConstants.SERVICE_PROVIDER));
         roleAccessMap.put("/api/service/evaluations", Set.of(RoleConstants.SERVICE_PROVIDER));
 
-        // Add community post access rules
+        // 添加社区动态访问规则
         roleAccessMap.put("/api/community", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN, RoleConstants.SERVICE_PROVIDER));
         roleAccessMap.put("/api/community/", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN, RoleConstants.SERVICE_PROVIDER));
 
@@ -78,7 +78,7 @@ public class RoleFilter implements Filter {
         roleAccessMap.put("/api/skills/", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN, RoleConstants.SERVICE_PROVIDER));
         roleAccessMap.put("/api/lost-found", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN, RoleConstants.SERVICE_PROVIDER));
         roleAccessMap.put("/api/lost-found/", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN, RoleConstants.SERVICE_PROVIDER));
-        // Add property fee endpoints
+        // 添加物业费接口
         roleAccessMap.put("/api/property-fee", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN));
         roleAccessMap.put("/api/property-fee/", Set.of(RoleConstants.RESIDENT, RoleConstants.PROPERTY_ADMIN));
         roleAccessMap.put("/api/admin/property-fee", Set.of(RoleConstants.PROPERTY_ADMIN));
@@ -90,23 +90,23 @@ public class RoleFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-        // Get request URI and user role
+        // 获取请求 URI 和用户角色
         String requestURI = httpRequest.getRequestURI();
         String role = (String) httpRequest.getAttribute("role");
 
-        // If no role is set (not authenticated), let JwtAuthFilter handle it
+        // 未设置角色（未认证）时交给 JwtAuthFilter 处理
         if (role == null) {
             chain.doFilter(request, response);
             return;
         }
 
-        // Check if the requested URI is in the access control list
+        // 检查请求 URI 是否在访问控制列表中
         for (Map.Entry<String, Set<String>> entry : roleAccessMap.entrySet()) {
             String uriPattern = entry.getKey();
             Set<String> allowedRoles = entry.getValue();
 
             if (requestURI.startsWith(uriPattern)) {
-                // Check if user's role is allowed
+                // 检查用户角色是否允许
                 if (!allowedRoles.contains(role)) {
                     sendJsonResponse(httpResponse, HttpServletResponse.SC_FORBIDDEN, "Access denied: insufficient permissions");
                     return;
@@ -115,11 +115,11 @@ public class RoleFilter implements Filter {
             }
         }
 
-        // Continue filter chain if access is allowed
+        // 访问允许时继续过滤链
         chain.doFilter(request, response);
     }
 
-    // Send JSON response
+    // 发送 JSON 响应
     private void sendJsonResponse(HttpServletResponse response, int statusCode, String message) throws IOException {
         response.setStatus(statusCode);
         response.setContentType("application/json");
@@ -139,6 +139,6 @@ public class RoleFilter implements Filter {
     
     @Override
     public void destroy() {
-        // Cleanup resources if needed
+        // 如有需要清理资源
     }
 }

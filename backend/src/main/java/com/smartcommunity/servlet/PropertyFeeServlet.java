@@ -746,7 +746,7 @@ public class PropertyFeeServlet extends HttpServlet {
         private String type;
         private Integer userId;
         
-        // Getters and Setters
+        // 访问器与设置器方法
         public String getPeriod() { return period; }
         public void setPeriod(String period) { this.period = period; }
         public String getType() { return type; }
@@ -816,7 +816,7 @@ public class PropertyFeeServlet extends HttpServlet {
         private List<TrendData> trendData;
         private int totalPages;
 
-        // Getters and Setters
+        // 访问器与设置器方法
         public int getTotalBills() { return totalBills; }
         public void setTotalBills(int totalBills) { this.totalBills = totalBills; }
         public double getTotalPaidAmount() { return totalPaidAmount; }
@@ -859,7 +859,7 @@ public class PropertyFeeServlet extends HttpServlet {
         private double paidAmount;
         private double unpaidAmount;
         
-        // Getters and Setters
+        // 访问器与设置器方法
         public String getPeriod() { return period; }
         public void setPeriod(String period) { this.period = period; }
         public double getPaidAmount() { return paidAmount; }
@@ -878,7 +878,7 @@ public class PropertyFeeServlet extends HttpServlet {
         private double amount;
         private int overdueDays;
         
-        // Getters and Setters
+        // 访问器与设置器方法
         public int getUserId() { return userId; }
         public void setUserId(int userId) { this.userId = userId; }
         public String getUserName() { return userName; }

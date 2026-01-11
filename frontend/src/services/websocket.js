@@ -1,4 +1,4 @@
-// WebSocket服务
+// 长连接服务
 
 class WebSocketService {
     constructor() {

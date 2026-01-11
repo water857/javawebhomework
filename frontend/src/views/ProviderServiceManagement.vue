@@ -353,8 +353,8 @@ export default {
       evaluationsSearchKeyword: '',
       evaluationsRatingFilter: '',
       evaluationsTimeFilter: '',
-      evaluationsSortBy: 'createdAt', // createdAt 或 rating
-      evaluationsSortOrder: 'desc', // asc 或 desc
+      evaluationsSortBy: 'createdAt', // 创建时间或评分
+      evaluationsSortOrder: 'desc', // 升序或降序
       averageRating: 0,
       totalEvaluations: 0,
       fiveStarCount: 0,

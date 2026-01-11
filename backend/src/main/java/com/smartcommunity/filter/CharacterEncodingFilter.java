@@ -32,6 +32,6 @@ public class CharacterEncodingFilter implements Filter {
 
     @Override
     public void destroy() {
-        // Cleanup resources if needed
+        // 如有需要清理资源
     }
 }

@@ -63,7 +63,7 @@ public class WeatherServlet extends HttpServlet {
         private String message;
         private Object data;
         
-        // getter和setter方法
+        // 访问器与设置器方法
         public boolean isSuccess() {
             return success;
         }

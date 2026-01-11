@@ -8,7 +8,7 @@ public class PostLike {
     private int userId;
     private Date createdAt;
     
-    // Getters and Setters
+    // 访问器与设置器方法
     public int getId() {
         return id;
     }

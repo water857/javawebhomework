@@ -49,12 +49,12 @@ import java.util.UUID;
         PrintWriter out = resp.getWriter();
 
         try {
-            // Get request URI
+            // 获取请求 URI
             String requestURI = req.getRequestURI();
             String contextPath = req.getContextPath();
             String relativeURI = requestURI.substring(contextPath.length());
 
-            // Get user information from JWT filter
+            // 从 JWT 过滤器获取用户信息
             String username = (String) req.getAttribute("username");
             String role = (String) req.getAttribute("role");
             User currentUser = userService.getUserByUsername(username);
@@ -85,7 +85,7 @@ import java.util.UUID;
                 out.write(gson.toJson(new Response("success", "Repairs retrieved successfully", repairs)));
                 return;
             } else if (relativeURI.matches("^/api/repair/\\d+$") ) {
-                // Handle /api/repair/{id} - direct repair ID access
+                // 处理 /api/repair/{id}，直接通过报修 ID 访问
                 String[] parts = relativeURI.split("/");
                 int repairId = Integer.parseInt(parts[parts.length - 1]);
                 Repair repair = repairService.getRepairById(repairId);
@@ -95,7 +95,7 @@ import java.util.UUID;
                     return;
                 }
 
-                // Check permission
+                // 检查权限
                 if (!hasPermission(repair, currentUser.getId(), role)) {
                     resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
                     out.write(gson.toJson(new Response("error", "Access denied")));
@@ -106,7 +106,7 @@ import java.util.UUID;
                 out.write(gson.toJson(new Response("success", "Repair retrieved successfully", repair)));
                 return;
             } else if (relativeURI.startsWith("/api/repair/detail/")) {
-                // Get repair detail by ID
+                // 根据 ID 获取报修详情
                 String[] parts = relativeURI.split("/");
                 if (parts.length < 5 || parts[4] == null || parts[4].isEmpty()) {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -122,7 +122,7 @@ import java.util.UUID;
                     return;
                 }
 
-                // Check permission
+                // 检查权限
                 if (!hasPermission(repair, currentUser.getId(), role)) {
                     resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
                     out.write(gson.toJson(new Response("error", "Access denied")));
@@ -155,17 +155,17 @@ import java.util.UUID;
         PrintWriter out = resp.getWriter();
 
         try {
-            // Get user information from JWT filter
+            // 从 JWT 过滤器获取用户信息
             String username = (String) req.getAttribute("username");
             String role = (String) req.getAttribute("role");
             User currentUser = userService.getUserByUsername(username);
 
-            // Get request URI
+            // 获取请求 URI
             String requestURI = req.getRequestURI();
             String contextPath = req.getContextPath();
             String relativeURI = requestURI.substring(contextPath.length());
 
-            // Handle image upload
+            // 处理图片上传
             if (relativeURI.equals("/api/repair/upload")) {
                 try {
                     Part filePart = req.getPart("image");
@@ -175,7 +175,7 @@ import java.util.UUID;
                         return;
                     }
 
-                    // Generate unique filename with safe characters only
+                    // 生成仅包含安全字符的唯一文件名
                     String originalFileName = getFileName(filePart);
                     // 使用UUID生成唯一前缀，避免文件名冲突，同时保留文件扩展名
                     String extension = "";
@@ -185,14 +185,14 @@ import java.util.UUID;
                     }
                     String fileName = UUID.randomUUID().toString() + extension;
 
-                    // Define upload directory
+                    // 定义上传目录
                     String uploadDir = getServletContext().getRealPath("/uploads");
                     File directory = new File(uploadDir);
                     if (!directory.exists()) {
                         directory.mkdirs();
                     }
 
-                    // Save file
+                    // 保存文件
                     String filePath = uploadDir + File.separator + fileName;
                     try (InputStream input = filePart.getInputStream();
                          OutputStream output = new FileOutputStream(filePath)) {
@@ -203,7 +203,7 @@ import java.util.UUID;
                         }
                     }
 
-                    // Return image URL with frontend proxy path - no need for encoding since we're using UUID
+                    // 返回带前端代理路径的图片 URL，使用 UUID 无需编码
                     String imageUrl = "/uploads/" + fileName;
                     resp.setStatus(HttpServletResponse.SC_OK);
                     out.write(gson.toJson(new Response("success", "Image uploaded successfully", imageUrl)));
@@ -216,7 +216,7 @@ import java.util.UUID;
                 }
             }
 
-            // Read request body for non-multipart requests
+            // 读取非 multipart 请求体
             BufferedReader reader = req.getReader();
             StringBuilder sb = new StringBuilder();
             String line;
@@ -226,7 +226,7 @@ import java.util.UUID;
             reader.close();
 
             if (relativeURI.equals("/api/repair/submit")) {
-                // Submit repair request
+                // 提交报修请求
                 if (!RoleConstants.RESIDENT.equals(role)) {
                     resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
                     out.write(gson.toJson(new Response("error", "Only residents can submit repair requests")));
@@ -235,7 +235,7 @@ import java.util.UUID;
 
                 SubmitRepairRequest submitRequest = gson.fromJson(sb.toString(), SubmitRepairRequest.class);
                 
-                // Validate required fields
+                // 校验必填字段
                 if (submitRequest.getTitle() == null || submitRequest.getTitle().trim().isEmpty()) {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                     out.write(gson.toJson(new Response("error", "Title is required")));
@@ -248,22 +248,22 @@ import java.util.UUID;
                     return;
                 }
                 
-                // Create repair object
+                // 创建报修对象
                 Repair repair = new Repair();
                 repair.setResidentId(currentUser.getId());
                 repair.setTitle(submitRequest.getTitle().trim());
                 repair.setContent(submitRequest.getContent().trim());
 
-                // Save repair
+                // 保存报修
                 Repair savedRepair = repairService.submitRepair(repair, submitRequest.getImages());
                 
                 resp.setStatus(HttpServletResponse.SC_OK);
                 out.write(gson.toJson(new Response("success", "Repair request submitted successfully", savedRepair)));
                 return;
             } else if (relativeURI.startsWith("/api/repair/evaluate/")) {
-                // Add repair evaluation
+                // 添加报修评价
                 String[] parts = relativeURI.split("/");
-                // For path /api/repair/evaluate/13, split results in ["", "api", "repair", "evaluate", "13"] (length 5)
+                // 对路径 /api/repair/evaluate/13，拆分结果为 ["", "api", "repair", "evaluate", "13"]（长度 5）
                 if (parts.length < 5 || parts[4] == null || parts[4].isEmpty()) {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                     out.write(gson.toJson(new Response("error", "Invalid repair ID")));
@@ -273,7 +273,7 @@ import java.util.UUID;
                 int repairId = Integer.parseInt(parts[4]);
                 RepairEvaluationRequest evalRequest = gson.fromJson(sb.toString(), RepairEvaluationRequest.class);
 
-                // Add evaluation
+                // 添加评价
                 RepairEvaluation evaluation = repairService.addRepairEvaluation(
                         repairId,
                         currentUser.getId(),
@@ -310,18 +310,18 @@ import java.util.UUID;
         PrintWriter out = resp.getWriter();
 
         try {
-            // Get user information from JWT filter
+            // 从 JWT 过滤器获取用户信息
             String username = (String) req.getAttribute("username");
             String role = (String) req.getAttribute("role");
             User currentUser = userService.getUserByUsername(username);
 
-            // Get request URI
+            // 获取请求 URI
             String requestURI = req.getRequestURI();
             String contextPath = req.getContextPath();
             String relativeURI = requestURI.substring(contextPath.length());
 
             if (relativeURI.startsWith("/api/repair/")) {
-                // Withdraw repair request
+                // 撤回报修请求
                 String[] parts = relativeURI.split("/");
                 if (parts.length < 4) {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -331,7 +331,7 @@ import java.util.UUID;
 
                 int repairId = Integer.parseInt(parts[parts.length - 1]);
                 
-                // Check if repair exists and belongs to current user
+                // 检查报修是否存在且属于当前用户
                 Repair repair = repairService.getRepairById(repairId);
                 if (repair == null) {
                     resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -339,7 +339,7 @@ import java.util.UUID;
                     return;
                 }
 
-                // Only residents can withdraw their own repairs and only if status is pending
+                // 仅住户可撤回自己的报修且状态必须为待处理
                 if (!RoleConstants.RESIDENT.equals(role) || repair.getResidentId() != currentUser.getId()) {
                     resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
                     out.write(gson.toJson(new Response("error", "Access denied")));
@@ -352,7 +352,7 @@ import java.util.UUID;
                     return;
                 }
 
-                // Delete repair from database
+                // 从数据库删除报修
                 repairService.deleteRepair(repairId, currentUser.getId());
                 
                 resp.setStatus(HttpServletResponse.SC_OK);
@@ -384,12 +384,12 @@ import java.util.UUID;
         PrintWriter out = resp.getWriter();
 
         try {
-            // Get user information from JWT filter
+            // 从 JWT 过滤器获取用户信息
             String username = (String) req.getAttribute("username");
             String role = (String) req.getAttribute("role");
             User currentUser = userService.getUserByUsername(username);
 
-            // Read request body
+            // 读取请求体
             BufferedReader reader = req.getReader();
             StringBuilder sb = new StringBuilder();
             String line;
@@ -398,13 +398,13 @@ import java.util.UUID;
             }
             reader.close();
 
-            // Get request URI
+            // 获取请求 URI
             String requestURI = req.getRequestURI();
             String contextPath = req.getContextPath();
             String relativeURI = requestURI.substring(contextPath.length());
 
             if (relativeURI.startsWith("/api/repair/status/")) {
-                // Update repair status
+                // 更新报修状态
                 String[] parts = relativeURI.split("/");
                 if (parts.length < 5) {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -415,7 +415,7 @@ import java.util.UUID;
                 int repairId = Integer.parseInt(parts[parts.length - 1]);
                 UpdateStatusRequest statusRequest = gson.fromJson(sb.toString(), UpdateStatusRequest.class);
 
-                // Update status
+                // 更新状态
                 Repair updatedRepair = repairService.updateRepairStatus(
                         repairId,
                         statusRequest.getStatus(),
@@ -427,7 +427,7 @@ import java.util.UUID;
                 out.write(gson.toJson(new Response("success", "Repair status updated successfully", updatedRepair)));
                 return;
             } else if (relativeURI.startsWith("/api/repair/assign/")) {
-                // Assign repair to service provider
+                // 指派报修给服务商
                 if (!RoleConstants.PROPERTY_ADMIN.equals(role)) {
                     resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
                     out.write(gson.toJson(new Response("error", "Only property admins can assign repair tasks")));
@@ -444,7 +444,7 @@ import java.util.UUID;
                 int repairId = Integer.parseInt(parts[parts.length - 1]);
                 AssignRepairRequest assignRequest = gson.fromJson(sb.toString(), AssignRepairRequest.class);
 
-                // Assign repair
+                // 指派报修
                 Repair assignedRepair = repairService.assignRepair(
                         repairId,
                         assignRequest.getProviderId(),
@@ -471,19 +471,19 @@ import java.util.UUID;
         }
     }
 
-    // Helper method to get filename from Content-Disposition header
+    // 从 Content-Disposition 头获取文件名的辅助方法
     private String getFileName(Part part) {
         String contentDisposition = part.getHeader("content-disposition");
         if (contentDisposition == null) {
-            return ""; // Fallback if header is missing
+            return ""; // 请求头缺失时的兜底
         }
         for (String cd : contentDisposition.split("[;]", -1)) {
             cd = cd.trim();
             if (cd.startsWith("filename=")) {
                 String filename = cd.substring("filename=".length());
-                // Remove surrounding quotes
+                // 移除两侧引号
                 filename = filename.replaceAll("^\"+|\"+$|^'+|'+$", "");
-                // Extract just the filename without path (for security)
+                // 仅提取文件名不包含路径（安全考虑）
                 int lastSeparator = filename.lastIndexOf(File.separator);
                 if (lastSeparator != -1) {
                     filename = filename.substring(lastSeparator + 1);
@@ -491,10 +491,10 @@ import java.util.UUID;
                 return filename;
             }
         }
-        return ""; // Fallback if filename not found
+        return ""; // 未找到文件名时的兜底
     }
 
-    // Check if user has permission to access repair
+    // 检查用户是否有访问报修权限
     private boolean hasPermission(Repair repair, int userId, String role) {
         if (RoleConstants.RESIDENT.equals(role)) {
             return repair.getResidentId() == userId;
@@ -506,7 +506,7 @@ import java.util.UUID;
         return false;
     }
 
-    // Request and Response classes
+    // 请求与响应类
     private static class SubmitRepairRequest {
         private String title;
         private String content;

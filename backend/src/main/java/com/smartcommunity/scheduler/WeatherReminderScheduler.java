@@ -66,7 +66,7 @@ public class WeatherReminderScheduler {
         private String content;
         private long timestamp;
         
-        // getter和setter方法
+        // 访问器与设置器方法
         public String getType() {
             return type;
         }

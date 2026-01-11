@@ -17,7 +17,7 @@ public class Activity {
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
-    // Getters and Setters
+    // 访问器与设置器方法
     public Integer getId() {
         return id;
     }

@@ -25,14 +25,14 @@ public class UserServlet extends HttpServlet {
         PrintWriter out = resp.getWriter();
 
         try {
-            // Get request URI to determine which operation to perform
+            // 获取请求 URI 以确定执行的操作
             String requestURI = req.getRequestURI();
             String contextPath = req.getContextPath();
             String relativeURI = requestURI.substring(contextPath.length());
             
-            // Check if it's a request for all residents (with or without trailing slash)
+            // 判断是否为所有住户请求（含或不含结尾斜杠）
             if (relativeURI.equals("/api/residents") || relativeURI.equals("/api/residents/")) {
-                // Get search parameters
+                // 获取搜索参数
                 String searchKeyword = req.getParameter("searchKeyword");
                 String statusParam = req.getParameter("status");
                 Integer status = null;
@@ -40,15 +40,15 @@ public class UserServlet extends HttpServlet {
                     try {
                         status = Integer.parseInt(statusParam);
                     } catch (NumberFormatException e) {
-                        // Invalid status parameter, ignore it
+                        // 状态参数无效，忽略
                     }
                 }
                 
-                // Get residents with filters
+                // 按条件获取住户
                 List<User> residents = userService.getResidents(searchKeyword, status);
                 List<UserResponse> residentResponses = new ArrayList<>();
                 
-                // Convert to response objects
+                // 转换为响应对象
                 for (User resident : residents) {
                     UserResponse userResponse = new UserResponse();
                     userResponse.setId(resident.getId());
@@ -68,9 +68,9 @@ public class UserServlet extends HttpServlet {
                 resp.setStatus(HttpServletResponse.SC_OK);
                 out.write(gson.toJson(new Response("success", "Residents retrieved successfully", residentResponses)));
                 return;
-            // Check if it's a request for all providers
+            // 判断是否为所有服务商请求
             } else if (relativeURI.equals("/api/providers") || relativeURI.equals("/api/providers/")) {
-                // Get search parameters
+                // 获取搜索参数
                 String searchKeyword = req.getParameter("searchKeyword");
                 String statusParam = req.getParameter("status");
                 Integer status = null;
@@ -78,15 +78,15 @@ public class UserServlet extends HttpServlet {
                     try {
                         status = Integer.parseInt(statusParam);
                     } catch (NumberFormatException e) {
-                        // Invalid status parameter, ignore it
+                        // 状态参数无效，忽略
                     }
                 }
                 
-                // Get providers with filters
+                // 按条件获取服务商
                 List<User> providers = userService.getProviders(searchKeyword, status);
                 List<UserResponse> providerResponses = new ArrayList<>();
                 
-                // Convert to response objects
+                // 转换为响应对象
                 for (User provider : providers) {
                     UserResponse userResponse = new UserResponse();
                     userResponse.setId(provider.getId());
@@ -107,7 +107,7 @@ public class UserServlet extends HttpServlet {
                 out.write(gson.toJson(new Response("success", "Providers retrieved successfully", providerResponses)));
                 return;
             } else if (relativeURI.startsWith("/api/residents/")) {
-                // Get specific resident by ID
+                // 根据 ID 获取指定住户
                 String[] parts = relativeURI.split("/");
                 if (parts.length != 4) {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -123,7 +123,7 @@ public class UserServlet extends HttpServlet {
                     return;
                 }
                 
-                // Prepare response data
+                // 准备响应数据
                 UserResponse userResponse = new UserResponse();
                 userResponse.setId(user.getId());
                 userResponse.setUsername(user.getUsername());
@@ -142,11 +142,11 @@ public class UserServlet extends HttpServlet {
                 return;
             }
             
-            // Original logic for getting user by username
-            // Get username from request parameter or session
+            // 兼容按用户名获取用户的原有逻辑
+            // 从请求参数或会话获取用户名
             String username = req.getParameter("username");
             if (username == null || username.isEmpty()) {
-                username = (String) req.getAttribute("username"); // Set by JwtAuthFilter
+                username = (String) req.getAttribute("username"); // 由 JwtAuthFilter 设置
             }
 
             if (username == null || username.isEmpty()) {
@@ -155,7 +155,7 @@ public class UserServlet extends HttpServlet {
                 return;
             }
 
-            // Get user information
+            // 获取用户信息
             User user = userService.getUserByUsername(username);
             if (user == null) {
                 resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -163,7 +163,7 @@ public class UserServlet extends HttpServlet {
                 return;
             }
 
-            // Prepare response data
+            // 准备响应数据
             UserResponse userResponse = new UserResponse();
             userResponse.setId(user.getId());
             userResponse.setUsername(user.getUsername());
@@ -195,7 +195,7 @@ public class UserServlet extends HttpServlet {
         PrintWriter out = resp.getWriter();
 
         try {
-            // Get username from JWT filter
+            // 从 JWT 过滤器获取用户名
             String username = (String) req.getAttribute("username");
             if (username == null || username.isEmpty()) {
                 resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -203,7 +203,7 @@ public class UserServlet extends HttpServlet {
                 return;
             }
 
-            // Read request body
+            // 读取请求体
             BufferedReader reader = req.getReader();
             StringBuilder sb = new StringBuilder();
             String line;
@@ -212,16 +212,16 @@ public class UserServlet extends HttpServlet {
             }
             reader.close();
 
-            // Get request URI to determine which update operation to perform
+            // 获取请求 URI 以确定更新操作
             String requestURI = req.getRequestURI();
             String contextPath = req.getContextPath();
             String relativeURI = requestURI.substring(contextPath.length());
 
             if (relativeURI.equals("/api/profile/update")) {
-                // Update profile information
+                // 更新个人资料信息
                 ProfileUpdateRequest profileUpdate = gson.fromJson(sb.toString(), ProfileUpdateRequest.class);
 
-                // Create user object with updated information
+                // 使用更新信息创建用户对象
                 User user = new User();
                 user.setUsername(username);
                 user.setRealName(profileUpdate.getRealName());
@@ -229,7 +229,7 @@ public class UserServlet extends HttpServlet {
                 user.setEmail(profileUpdate.getEmail());
                 user.setAddress(profileUpdate.getAddress());
 
-                // Update user in database
+                // 更新数据库中的用户
                 int result = userService.updateUser(user);
                 if (result > 0) {
                     resp.setStatus(HttpServletResponse.SC_OK);
@@ -239,15 +239,15 @@ public class UserServlet extends HttpServlet {
                     out.write(gson.toJson(new Response("error", "Failed to update profile")));
                 }
             } else if (relativeURI.equals("/api/profile/update-idcard")) {
-                // Update ID card information
+                // 更新身份证信息
                 IdCardUpdateRequest idCardUpdate = gson.fromJson(sb.toString(), IdCardUpdateRequest.class);
 
-                // Create user object with updated ID card
+                // 使用更新后的身份证创建用户对象
                 User user = new User();
                 user.setUsername(username);
                 user.setIdCard(idCardUpdate.getIdCard());
 
-                // Update user in database
+                // 更新数据库中的用户
                 int result = userService.updateUser(user);
                 if (result > 0) {
                     resp.setStatus(HttpServletResponse.SC_OK);
@@ -257,7 +257,7 @@ public class UserServlet extends HttpServlet {
                     out.write(gson.toJson(new Response("error", "Failed to update ID card")));
                 }
             } else if (relativeURI.startsWith("/api/residents/")) {
-                // Get specific resident ID
+                // 获取指定住户 ID
                 String[] parts = relativeURI.split("/");
                 if (parts.length != 4) {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -267,13 +267,13 @@ public class UserServlet extends HttpServlet {
                 
                 int residentId = Integer.parseInt(parts[3]);
                 
-                // Check if it's a status update request
+                // 判断是否为状态更新请求
                 if (req.getParameter("action") != null && req.getParameter("action").equals("status")) {
-                    // Update user status (enable/disable)
+                    // 更新用户状态（启用/禁用）
                     UpdateStatusRequest updateStatusRequest = gson.fromJson(sb.toString(), UpdateStatusRequest.class);
                     int status = updateStatusRequest.getStatus();
                     
-                    // Update status in database
+                    // 更新数据库状态
                     int result = userService.updateUserStatus(residentId, status);
                     if (result > 0) {
                         resp.setStatus(HttpServletResponse.SC_OK);
@@ -283,10 +283,10 @@ public class UserServlet extends HttpServlet {
                         out.write(gson.toJson(new Response("error", "Failed to update resident status")));
                     }
                 } else {
-                    // Update resident information
+                    // 更新住户信息
                     UpdateResidentRequest updateResidentRequest = gson.fromJson(sb.toString(), UpdateResidentRequest.class);
                     
-                    // Get existing user
+                    // 获取现有用户
                     User user = userService.getUserById(residentId);
                     if (user == null) {
                         resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -294,14 +294,14 @@ public class UserServlet extends HttpServlet {
                         return;
                     }
                     
-                    // Update user fields
+                    // 更新用户字段
                     user.setRealName(updateResidentRequest.getRealName());
                     user.setPhone(updateResidentRequest.getPhone());
                     user.setEmail(updateResidentRequest.getEmail());
                     user.setIdCard(updateResidentRequest.getIdCard());
                     user.setAddress(updateResidentRequest.getAddress());
                     
-                    // Update user in database
+                    // 更新数据库中的用户
                     int result = userService.updateUser(user);
                     if (result > 0) {
                         resp.setStatus(HttpServletResponse.SC_OK);
@@ -312,7 +312,7 @@ public class UserServlet extends HttpServlet {
                     }
                 }
             } else if (relativeURI.startsWith("/api/providers/")) {
-                // Get specific provider ID
+                // 获取指定服务商 ID
                 String[] parts = relativeURI.split("/");
                 if (parts.length != 4) {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -322,13 +322,13 @@ public class UserServlet extends HttpServlet {
                 
                 int providerId = Integer.parseInt(parts[3]);
                 
-                // Check if it's a status update request
+                // 判断是否为状态更新请求
                 if (req.getParameter("action") != null && req.getParameter("action").equals("status")) {
-                    // Update user status (enable/disable)
+                    // 更新用户状态（启用/禁用）
                     UpdateStatusRequest updateStatusRequest = gson.fromJson(sb.toString(), UpdateStatusRequest.class);
                     int status = updateStatusRequest.getStatus();
                     
-                    // Update status in database
+                    // 更新数据库状态
                     int result = userService.updateUserStatus(providerId, status);
                     if (result > 0) {
                         resp.setStatus(HttpServletResponse.SC_OK);
@@ -338,10 +338,10 @@ public class UserServlet extends HttpServlet {
                         out.write(gson.toJson(new Response("error", "Failed to update provider status")));
                     }
                 } else {
-                    // Update provider information
+                    // 更新服务商信息
                     UpdateResidentRequest updateProviderRequest = gson.fromJson(sb.toString(), UpdateResidentRequest.class);
                     
-                    // Get existing user
+                    // 获取现有用户
                     User user = userService.getUserById(providerId);
                     if (user == null) {
                         resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -349,14 +349,14 @@ public class UserServlet extends HttpServlet {
                         return;
                     }
                     
-                    // Update user fields
+                    // 更新用户字段
                     user.setRealName(updateProviderRequest.getRealName());
                     user.setPhone(updateProviderRequest.getPhone());
                     user.setEmail(updateProviderRequest.getEmail());
                     user.setIdCard(updateProviderRequest.getIdCard());
                     user.setAddress(updateProviderRequest.getAddress());
                     
-                    // Update user in database
+                    // 更新数据库中的用户
                     int result = userService.updateUser(user);
                     if (result > 0) {
                         resp.setStatus(HttpServletResponse.SC_OK);
@@ -387,7 +387,7 @@ public class UserServlet extends HttpServlet {
         PrintWriter out = resp.getWriter();
 
         try {
-            // Get username from JWT filter
+            // 从 JWT 过滤器获取用户名
             String username = (String) req.getAttribute("username");
             if (username == null || username.isEmpty()) {
                 resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -395,7 +395,7 @@ public class UserServlet extends HttpServlet {
                 return;
             }
 
-            // Read request body
+            // 读取请求体
             BufferedReader reader = req.getReader();
             StringBuilder sb = new StringBuilder();
             String line;
@@ -404,15 +404,15 @@ public class UserServlet extends HttpServlet {
             }
             reader.close();
 
-            // Check if it's a password change request
+            // 判断是否为修改密码请求
             String requestURI = req.getRequestURI();
             String contextPath = req.getContextPath();
             String relativeURI = requestURI.substring(contextPath.length());
             if (relativeURI.equals("/api/change-password")) {
-                // Change password
+                // 修改密码
                 PasswordChangeRequest passwordChange = gson.fromJson(sb.toString(), PasswordChangeRequest.class);
 
-                // Validate request
+                // 校验请求
                 if (passwordChange.getOldPassword() == null || passwordChange.getOldPassword().isEmpty() ||
                         passwordChange.getNewPassword() == null || passwordChange.getNewPassword().isEmpty()) {
                     resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -420,7 +420,7 @@ public class UserServlet extends HttpServlet {
                     return;
                 }
 
-                // Change password
+                // 修改密码
                 boolean result = userService.changePassword(username, passwordChange.getOldPassword(), passwordChange.getNewPassword());
                 if (result) {
                     resp.setStatus(HttpServletResponse.SC_OK);
@@ -430,10 +430,10 @@ public class UserServlet extends HttpServlet {
                     out.write(gson.toJson(new Response("error", "Failed to change password")));
                 }
             } else if (relativeURI.equals("/api/residents")) {
-                // Add new resident
+                // 添加新住户
                 AddResidentRequest addResidentRequest = gson.fromJson(sb.toString(), AddResidentRequest.class);
                 
-                // Create user object
+                // 创建用户对象
                 User user = new User();
                 user.setUsername(addResidentRequest.getUsername());
                 user.setPassword(addResidentRequest.getPassword());
@@ -442,9 +442,9 @@ public class UserServlet extends HttpServlet {
                 user.setEmail(addResidentRequest.getEmail());
                 user.setIdCard(addResidentRequest.getIdCard());
                 user.setAddress(addResidentRequest.getAddress());
-                user.setRole("resident"); // Set role to resident
+                user.setRole("resident"); // 设置角色为住户
                 
-                // Add user
+                // 添加用户
                 int result = userService.addUser(user);
                 if (result > 0) {
                     resp.setStatus(HttpServletResponse.SC_OK);
@@ -454,10 +454,10 @@ public class UserServlet extends HttpServlet {
                     out.write(gson.toJson(new Response("error", "Failed to add resident")));
                 }
             } else if (relativeURI.equals("/api/providers")) {
-                // Add new provider
+                // 添加新服务商
                 AddResidentRequest addProviderRequest = gson.fromJson(sb.toString(), AddResidentRequest.class);
                 
-                // Create user object
+                // 创建用户对象
                 User user = new User();
                 user.setUsername(addProviderRequest.getUsername());
                 user.setPassword(addProviderRequest.getPassword());
@@ -466,9 +466,9 @@ public class UserServlet extends HttpServlet {
                 user.setEmail(addProviderRequest.getEmail());
                 user.setIdCard(addProviderRequest.getIdCard());
                 user.setAddress(addProviderRequest.getAddress());
-                user.setRole("service_provider"); // Set role to service provider
+                user.setRole("service_provider"); // 设置角色为服务商
                 
-                // Add user
+                // 添加用户
                 int result = userService.addUser(user);
                 if (result > 0) {
                     resp.setStatus(HttpServletResponse.SC_OK);
@@ -495,7 +495,7 @@ public class UserServlet extends HttpServlet {
         }
     }
 
-    // Request classes
+    // 请求类
     private static class ProfileUpdateRequest {
         private String realName;
         private String phone;
@@ -694,7 +694,7 @@ public class UserServlet extends HttpServlet {
         }
     }
 
-    // Response classes
+    // 响应类
         private static class UserResponse {
             private int id;
             private String username;
@@ -708,7 +708,7 @@ public class UserServlet extends HttpServlet {
             private Object createdAt;
             private Object updatedAt;
 
-            // Getters and Setters
+            // 访问器与设置器方法
             public int getId() {
                 return id;
             }

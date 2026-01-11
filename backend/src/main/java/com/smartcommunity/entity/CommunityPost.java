@@ -21,7 +21,7 @@ public class CommunityPost {
     private List<Tag> tags;
     private boolean isLiked;
     
-    // Getters and Setters
+    // 访问器与设置器方法
     public int getId() {
         return id;
     }

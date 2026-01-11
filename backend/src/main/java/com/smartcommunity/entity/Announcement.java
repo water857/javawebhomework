@@ -13,7 +13,7 @@ public class Announcement {
     private Timestamp updatedAt;
     private Timestamp publishedAt;
 
-    // Getters and Setters
+    // 访问器与设置器方法
     public Integer getId() {
         return id;
     }

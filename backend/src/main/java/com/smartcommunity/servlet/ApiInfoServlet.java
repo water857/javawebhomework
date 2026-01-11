@@ -20,7 +20,7 @@ public class ApiInfoServlet extends HttpServlet {
         PrintWriter out = resp.getWriter();
 
         try {
-            // Prepare API info response
+            // 准备 API 信息响应
             Map<String, Object> apiInfo = new HashMap<>();
             apiInfo.put("version", "1.0.0");
             apiInfo.put("name", "Smart Community Service API");
@@ -48,7 +48,7 @@ public class ApiInfoServlet extends HttpServlet {
         }
     }
 
-    // Response class
+    // 响应类
     private static class Response {
         private String code;
         private String message;
@@ -65,7 +65,7 @@ public class ApiInfoServlet extends HttpServlet {
             this.data = data;
         }
 
-        // Getters and setters
+        // 访问器与设置器方法
         public String getCode() {
             return code;
         }
